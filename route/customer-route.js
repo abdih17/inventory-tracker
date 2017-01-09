@@ -2,7 +2,7 @@
 
 const Router = require('express').Router;
 const jsonParser = require('body-parser').json();
-// const createError = require('http-errors');
+const createError = require('http-errors');
 const debug = require('debug')('inventory:customerRouter');
 // const basicAuth = require('../lib/basic-auth-middleware.js');
 const Customer = require('../model/customer.js');
@@ -12,6 +12,8 @@ const customerRouter = module.exports = Router();
 
 customerRouter.post('/api/signup', jsonParser, function(req, res, next) {
   debug('POST: /api/signup');
+
+  if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body included.'));
 
   let password = req.body.password;
   delete req.body.password;

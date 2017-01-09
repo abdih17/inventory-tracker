@@ -17,6 +17,14 @@ const exampleCustomer = {
   address: '12345 nowheresville, test city, test state, 99999'
 };
 
+const invalidCustomer = {
+  nam: 'Shit turtle',
+  username: 'Test username',
+  password: 'Testword',
+  email: 'test@test.com',
+  address: '12345 nowheresville, test city, test state, 99999'
+};
+
 describe('Customer route', function() {
   after(done => {
     Customer.remove({})
@@ -35,6 +43,34 @@ describe('Customer route', function() {
           expect(response.status).to.equal(201);
           expect(response.body).to.be.a('string');
           expect(response.body).to.equal(exampleCustomer.username);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid body', () => {
+      it('should return a 400 status', done => {
+        request
+        .post(`${url}/api/signup`)
+        .send(invalidCustomer)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          expect(response.body).to.not.equal(invalidCustomer.username);
+          done();
+        });
+      });
+    });
+
+    describe('With an empty body', () => {
+      it('should return a 400 status', done => {
+        request
+        .post(`${url}/api/signup`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.be.empty;
           done();
         });
       });
