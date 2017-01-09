@@ -15,12 +15,14 @@ const customerSchema = Schema({
   },
   username: {
     type: String,
-    required: true
+    required: true,
+    unique: true
     // TODO: stretch goal- set up default username to email
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   password: {
     type: String,
