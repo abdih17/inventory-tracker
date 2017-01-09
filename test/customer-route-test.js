@@ -26,6 +26,18 @@ const invalidCustomer = {
 };
 
 describe('Customer route', function() {
+  before(done => {
+    let customer = new Customer(exampleCustomer);
+
+    customer.hashPassword(customer.password)
+    .then(customer => customer.save())
+    .then(customer => {
+      this.tempCustomer = customer;
+      done();
+    })
+    .catch(done);
+  });
+
   after(done => {
     Customer.remove({})
     .then(() => done())
@@ -71,6 +83,25 @@ describe('Customer route', function() {
           expect(response.status).to.equal(400);
           expect(response.body).to.be.an('object');
           expect(response.body).to.be.empty;
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET: /api/signin', () => {
+    describe('with a valid body', () => {
+      it('should return a 200 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .auth('Test username', 'Testword')
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.username).to.equal(exampleCustomer.username);
+          expect(response.body.name).to.equal(exampleCustomer.name);
+          expect(response.body.email).to.equal(exampleCustomer.email);
+          expect(response.body.address).to.equal(exampleCustomer.address);
           done();
         });
       });

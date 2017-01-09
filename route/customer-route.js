@@ -9,7 +9,6 @@ const Customer = require('../model/customer.js');
 
 const customerRouter = module.exports = Router();
 
-
 customerRouter.post('/api/signup', jsonParser, function(req, res, next) {
   debug('POST: /api/signup');
 
