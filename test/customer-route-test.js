@@ -98,10 +98,8 @@ describe('Customer route', function() {
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(200);
-          expect(response.body.username).to.equal(exampleCustomer.username);
-          expect(response.body.name).to.equal(exampleCustomer.name);
-          expect(response.body.email).to.equal(exampleCustomer.email);
-          expect(response.body.address).to.equal(exampleCustomer.address);
+          expect(response.text).to.be.a('string');
+          expect(response.text).to.equal('Successful login');
           done();
         });
       });
