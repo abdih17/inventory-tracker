@@ -2,9 +2,9 @@
 
 const Router = require('express').Router;
 const jsonParser = require('body-parser').json();
-const createError = require('http-errors');
+// const createError = require('http-errors');
 const debug = require('debug')('inventory:customerRouter');
-const basicAuth = require('../lib/basic-auth-middleware.js');
+// const basicAuth = require('../lib/basic-auth-middleware.js');
 const Customer = require('../model/customer.js');
 
 const customerRouter = module.exports = Router();
@@ -20,7 +20,7 @@ customerRouter.post('/api/signup', jsonParser, function(req, res, next) {
   customer.hashPassword(password)
   .then( customer => customer.save())
   .then( customer => {
-    res.status(201).send(customer.username);
+    res.status(201).json(customer.username);
   })
   .catch(next);
 });
