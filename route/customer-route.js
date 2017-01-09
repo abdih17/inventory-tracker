@@ -32,5 +32,5 @@ customerRouter.get('/api/signin', basicAuth, function(req, res, next) {
   Customer.findOne({ username: req.auth.username })
   .then(customer => customer.validatePassword(req.auth.password))
   .then(() => res.status(200).send('Successful login'))
-  .catch(next);
+  .catch(() => next(createError(401, 'Invalid login')));
 });

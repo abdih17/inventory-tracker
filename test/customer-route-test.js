@@ -26,18 +26,6 @@ const invalidCustomer = {
 };
 
 describe('Customer route', function() {
-  before(done => {
-    let customer = new Customer(exampleCustomer);
-
-    customer.hashPassword(customer.password)
-    .then(customer => customer.save())
-    .then(customer => {
-      this.tempCustomer = customer;
-      done();
-    })
-    .catch(done);
-  });
-
   after(done => {
     Customer.remove({})
     .then(() => done())
