@@ -104,5 +104,31 @@ describe('Customer route', function() {
         });
       });
     });
+
+    describe('With an invalid password', () => {
+      it('should return a 401 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .auth('Test username', 'Password')
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid username', () => {
+      it('should return a 401 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .auth('Test usernam', 'Testword')
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
   });
 });
