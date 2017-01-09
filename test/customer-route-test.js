@@ -25,14 +25,22 @@ const invalidCustomer = {
   address: '12345 nowheresville, test city, test state, 99999'
 };
 
-describe('Customer route', function() {
-  after(done => {
-    Customer.remove({})
-    .then(() => done())
-    .catch(done);
-  });
+const updatedCustomer = {
+  username: 'Usernam',
+  name: 'Nam',
+  address: 'addnam',
+  email: 'nam@nam.nam',
+  password: 'new password'
+};
 
+describe('Customer route', function() {
   describe('POST: /api/signup', () => {
+    afterEach(done => {
+      Customer.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
     describe('With a valid body', () => {
       it('should return a username', done => {
         request
@@ -78,6 +86,24 @@ describe('Customer route', function() {
   });
 
   describe('GET: /api/signin', () => {
+    before(done => {
+      let customer = new Customer(exampleCustomer);
+
+      customer.hashPassword(customer.password)
+      .then(customer => customer.save())
+      .then(customer => {
+        this.tempCustomer = customer;
+        done();
+      })
+      .catch(done);
+    });
+
+    after(done => {
+      Customer.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
     describe('with a valid body', () => {
       it('should return a 200 status', done => {
         request
@@ -114,6 +140,41 @@ describe('Customer route', function() {
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('PUT: /api/customer/:customerID', () => {
+    before(done => {
+      let customer = new Customer(exampleCustomer);
+
+      customer.hashPassword(customer.password)
+      .then(customer => customer.save())
+      .then(customer => {
+        this.tempCustomer = customer;
+        done();
+      })
+      .catch(done);
+    });
+
+    after(done => {
+      Customer.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('With a valid ID and body', () => {
+      it('should return a 200 status', done => {
+        request
+        .put(`${url}/api/customer/${this.tempCustomer._id}`)
+        .auth('Test username', 'Testword')
+        .send(updatedCustomer)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.text).to.equal('Update successful');
           done();
         });
       });
