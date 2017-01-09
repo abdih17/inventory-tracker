@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "DEBUG='inventory*' mocha",
+    "test": "DEBUG='inventory*' gulp lint && mocha",
     "start": "DEBUG='inventory*' node server.js"
   },
   "repository": {
