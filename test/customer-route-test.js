@@ -5,9 +5,10 @@ const request = require('superagent');
 // const mongoose = require('mongoose');
 // const Promise = require('bluebird');
 const Customer = require('../model/customer.js');
-const url = `http://localhost:${process.env.PORT}`;
 
 require('../server.js');
+
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleCustomer = {
   name: 'Test name',
