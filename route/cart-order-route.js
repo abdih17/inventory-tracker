@@ -27,6 +27,6 @@ cartOrderRouter.post('/api/orders/:customerID/cartOrder', parseJSON, function(re
     this.tempCustomer.currentOrders.push(order._id);
     return this.tempCustomer.save();
   })
-  .then(() => response.json(this.tempOrder))
+  .then(() => response.status(201).json(this.tempOrder))
   .catch(next);
 });
