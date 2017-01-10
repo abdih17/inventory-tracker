@@ -114,8 +114,11 @@ describe('Customer route', function() {
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(200);
-          expect(response.text).to.be.a('string');
-          expect(response.text).to.equal('Successful login');
+          expect(response.body.name).to.equal(exampleCustomer.name);
+          expect(response.body.email).to.equal(exampleCustomer.email);
+          expect(response.body.address).to.equal(exampleCustomer.address);
+          expect(response.body.password).to.equal(undefined);
+          expect(response.body.username).to.equal(undefined);
           done();
         });
       });
@@ -204,6 +207,78 @@ describe('Customer route', function() {
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+
+    describe('With a valid ID, valid auth, but no body', () => {
+      it('should return a 400 status', done => {
+        request
+        .put(`${url}/api/customer/${this.tempCustomer._id}`)
+        .auth('Test username', 'Testword')
+        .send({})
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('DELETE: /api/customer/:customerID', () => {
+    before(done => {
+      let customer = new Customer(exampleCustomer);
+
+      customer.hashPassword(customer.password)
+      .then(customer => customer.save())
+      .then(customer => {
+        this.tempCustomer = customer;
+        done();
+      })
+      .catch(done);
+    });
+
+    after(done => {
+      Customer.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('With a valid ID', () => {
+      it('should return a 204 status', done => {
+        request
+        .delete(`${url}/api/customer/${this.tempCustomer._id}`)
+        .auth('Test username', 'Testword')
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(204);
+          done();
+        });
+      });
+    });
+
+    describe('With a valid ID, but bad auth', () => {
+      it('should return a 401 status', done => {
+        request
+        .delete(`${url}/api/customer/${this.tempCustomer._id}`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid ID', () => {
+      it('should return a 404 status', done => {
+        request
+        .delete(`${url}/api/customer/69`)
+        .auth('Test username', 'Testword')
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
           done();
         });
       });
