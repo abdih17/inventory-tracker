@@ -31,8 +31,8 @@ cartOrderRouter.put('/api/orders/:orderID', parseJSON, function(request, respons
   debug('PUT: /api/orders/:orderID');
 
   if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body posted.'));
-  
-  CartOrder.findByIdAndUpdate(request.params.orderID)
+
+  CartOrder.findByIdAndUpdate(request.params.orderID, request.body, {new: true})
   .then(order => response.json(order))
   .catch(() => next(createError(404, 'Not found.')));
 });

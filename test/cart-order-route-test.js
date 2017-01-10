@@ -121,4 +121,21 @@ describe('Cart Order Routes', function() {
       });
     });
   });
+
+  describe('PUT: /api/orders/:orderID', () => {
+    describe('With a valid ID and body', () => {
+      it('should return an order', done => {
+        request
+        .put(`${url}/api/orders/${this.tempOrder._id}`)
+        .send({shippingAddress: 'new address'})
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.shippingAddress).to.equal('new address');
+          expect(response.body.customerID).to.equal(this.tempOrder.customerID);
+          done();
+        });
+      });
+    });
+  });
 });
