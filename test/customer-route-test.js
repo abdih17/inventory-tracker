@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 const request = require('superagent');
 // const mongoose = require('mongoose');
 // const Promise = require('bluebird');
+// Adding a comment to make Travis rebuild for environment variables.
 const Customer = require('../model/customer.js');
 
 require('../server.js');
