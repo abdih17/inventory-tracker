@@ -223,4 +223,37 @@ describe('Customer route', function() {
       });
     });
   });
+
+  describe('DELETE: /api/customer/:customerID', () => {
+    before(done => {
+      let customer = new Customer(exampleCustomer);
+
+      customer.hashPassword(customer.password)
+      .then(customer => customer.save())
+      .then(customer => {
+        this.tempCustomer = customer;
+        done();
+      })
+      .catch(done);
+    });
+
+    after(done => {
+      Customer.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('With a valid ID', () => {
+      it('should return a 204 status', done => {
+        request
+        .delete(`${url}/api/customer/${this.tempCustomer._id}`)
+        .auth('Test username', 'Testword')
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(204);
+          done();
+        });
+      });
+    });
+  });
 });

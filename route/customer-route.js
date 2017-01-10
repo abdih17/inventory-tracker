@@ -60,5 +60,5 @@ customerRouter.delete('/api/customer/:customerID', basicAuth, function(request, 
 
   Customer.findByIdAndRemove(request.params.customerID)
   .then(() => response.status(204).send('Customer deleted.'))
-  .catch(() => next(createError(404, 'Customer not found.')));
+  .catch(() => next(createError(404)));
 });
