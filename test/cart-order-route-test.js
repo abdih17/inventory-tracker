@@ -50,12 +50,17 @@ describe('Cart Order Routes', function() {
         .send(exampleOrder)
         .end((err, response) => {
           if (err) return done(err);
-          expect(response.status).to.equal(201);
-          expect(response.customerID).to.equal(this.tempCustomer._id);
-          expect(this.tempCustomer.currentOrders.length).to.equal(1);
-          expect(response.shippingAddress).to.equal(this.tempCustomer.address);
-          expect(response.shippingName).to.equal(this.tempCustomer.name);
-          done();
+          Customer.findById(this.tempCustomer._id)
+          .then(customer => {
+            this.tempCustomer = customer;
+            expect(response.status).to.equal(201);
+            expect(response.body.customerID).to.equal(this.tempCustomer._id.toString());
+            expect(response.body.shippingAddress).to.equal(this.tempCustomer.address);
+            expect(response.body.shippingName).to.equal(this.tempCustomer.name);
+            expect(this.tempCustomer.currentOrders.length).to.equal(1);
+            done();
+          })
+          .catch(done);
         });
       });
     });
