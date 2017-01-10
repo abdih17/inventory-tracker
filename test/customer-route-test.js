@@ -255,5 +255,17 @@ describe('Customer route', function() {
         });
       });
     });
+
+    describe('With a valid ID, but bad auth', () => {
+      it('should return a 401 status', done => {
+        request
+        .delete(`${url}/api/customer/${this.tempCustomer._id}`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
   });
 });
