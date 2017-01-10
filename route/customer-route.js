@@ -31,7 +31,12 @@ customerRouter.get('/api/signin', basicAuth, function(req, res, next) {
 
   Customer.findOne({ username: req.auth.username })
   .then(customer => customer.validatePassword(req.auth.password))
-  .then(() => res.status(200).send('Successful login'))
+  .then(customer => {
+    return res.json({
+      name: customer.name,
+      address: customer.address,
+      email: customer.email});
+  })
   .catch(() => next(createError(401, 'Invalid login')));
 });
 
@@ -53,4 +58,12 @@ customerRouter.put('/api/customer/:customerID', basicAuth, jsonParser, function(
     res.status(200).send('Update successful');
   })
   .catch(() => next(createError(404, 'Customer not found.')));
+});
+
+customerRouter.delete('/api/customer/:customerID', basicAuth, function(request, response, next) {
+  debug('DELETE: /api/customer/:customerID');
+
+  Customer.findByIdAndRemove(request.params.customerID)
+  .then(() => response.status(204).send('Customer deleted.'))
+  .catch(() => next(createError(404)));
 });
