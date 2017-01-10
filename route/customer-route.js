@@ -54,3 +54,11 @@ customerRouter.put('/api/customer/:customerID', basicAuth, jsonParser, function(
   })
   .catch(() => next(createError(404, 'Customer not found.')));
 });
+
+customerRouter.delete('/api/customer/:customerID', basicAuth, function(request, response, next) {
+  debug('DELETE: /api/customer/:customerID');
+
+  Customer.findByIdAndRemove(request.params.customerID)
+  .then(() => response.status(204).send('Customer deleted.'))
+  .catch(() => next(createError(404, 'Customer not found.')));
+});
