@@ -26,7 +26,7 @@ employeeSchema.pre('save', function(next) {
   if (this.admin === true) {
     this.shipping = true;
     this.receiving = true;
-  };
+  }
   next();
 });
 
@@ -71,7 +71,7 @@ employeeSchema.methods.generateFindHash = function() {
         attempts++;
         _generateFindHash.call(this);
       });
-    };
+    }
   });
 };
 
@@ -85,4 +85,4 @@ employeeSchema.methods.generateToken = function() {
   });
 };
 
-module.exports = mongoose.module('employee', employeeSchema);
+module.exports = mongoose.model('employee', employeeSchema);
