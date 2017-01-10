@@ -34,3 +34,23 @@ customerRouter.get('/api/signin', basicAuth, function(req, res, next) {
   .then(() => res.status(200).send('Successful login'))
   .catch(() => next(createError(401, 'Invalid login')));
 });
+
+customerRouter.put('/api/customer/:customerID', basicAuth, jsonParser, function(req, res, next) {
+  debug('PUT: /api/customer/:customerID');
+
+  if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body included.'));
+
+  Customer.findByIdAndUpdate(req.params.customerID, req.body, {new: true})
+  .then(customer => {
+    if (req.body.password) {
+      let password = req.body.password;
+      delete req.body.password;
+      return customer.hashPassword(password)
+      .then(customer => customer.save())
+      .then(() => res.status(200).send('Update successful'))
+      .catch(() => next(createError(404, 'Customer not found.')));
+    }
+    res.status(200).send('Update successful');
+  })
+  .catch(next);
+});

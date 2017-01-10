@@ -30,7 +30,7 @@ const updatedCustomer = {
   name: 'Nam',
   address: 'addnam',
   email: 'nam@nam.nam',
-  password: 'new password'
+  password: 'newPassword'
 };
 
 describe('Customer route', function() {
