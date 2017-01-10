@@ -208,5 +208,19 @@ describe('Customer route', function() {
         });
       });
     });
+
+    describe('With a valid ID, valid auth, but no body', () => {
+      it('should return a 400 status', done => {
+        request
+        .put(`${url}/api/customer/${this.tempCustomer._id}`)
+        .auth('Test username', 'Testword')
+        .send({})
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
   });
 });
