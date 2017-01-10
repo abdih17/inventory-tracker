@@ -52,5 +52,5 @@ customerRouter.put('/api/customer/:customerID', basicAuth, jsonParser, function(
     }
     res.status(200).send('Update successful');
   })
-  .catch(next);
+  .catch(() => next(createError(404, 'Customer not found.')));
 });

@@ -179,5 +179,19 @@ describe('Customer route', function() {
         });
       });
     });
+
+    describe('With an invalid ID but valid body', () => {
+      it('should return a 404 status', done => {
+        request
+        .put(`${url}/api/customer/69`)
+        .auth('Test username', 'Testword')
+        .send(updatedCustomer)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
   });
 });
