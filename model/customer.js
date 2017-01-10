@@ -35,7 +35,7 @@ const customerSchema = Schema({
   },
   currentOrders: [
     {
-      type: Schema.Types.ObjectId
+      type: Schema.Types.ObjectId, ref: 'cartOrder'
     }
   ],
   pastOrders: [
