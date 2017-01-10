@@ -58,6 +58,7 @@ describe('Cart Order Routes', function() {
             expect(response.body.shippingAddress).to.equal(this.tempCustomer.address);
             expect(response.body.shippingName).to.equal(this.tempCustomer.name);
             expect(this.tempCustomer.currentOrders.length).to.equal(1);
+            expect(this.tempCustomer.currentOrders[0].toString()).to.equal(response.body._id);
             done();
           })
           .catch(done);
