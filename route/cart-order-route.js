@@ -36,3 +36,11 @@ cartOrderRouter.put('/api/orders/:orderID', parseJSON, function(request, respons
   .then(order => response.json(order))
   .catch(() => next(createError(404, 'Not found.')));
 });
+
+cartOrderRouter.delete('/api/orders/:orderID', function(request, response, next) {
+  debug('DELETE: /api/orders/:orderID');
+
+  Customer.removeCartOrder(request.params.orderID)
+  .then(() => response.status(204).send())
+  .catch(() => next(createError(404, 'Not found.')));
+});
