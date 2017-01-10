@@ -164,4 +164,19 @@ describe('Cart Order Routes', function() {
       });
     });
   });
+
+  describe('DELETE: /api/orders/:orderID', () => {
+    describe('With a valid ID', () => {
+      it('should return a 204 status', done => {
+        request
+        .delete(`${url}/api/orders/${this.tempOrder._id}`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(204);
+          expect(response.body.shippingAddress).to.equal(undefined);
+          done();
+        });
+      });
+    });
+  });
 });
