@@ -267,5 +267,18 @@ describe('Customer route', function() {
         });
       });
     });
+
+    describe('With an invalid ID', () => {
+      it('should return a 404 status', done => {
+        request
+        .delete(`${url}/api/customer/69`)
+        .auth('Test username', 'Testword')
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
   });
 });
