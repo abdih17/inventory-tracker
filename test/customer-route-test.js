@@ -193,5 +193,18 @@ describe('Customer route', function() {
         });
       });
     });
+
+    describe('With a valid ID, but invalid auth', () => {
+      it('should return a 401 status', done => {
+        request
+        .put(`${url}/api/customer/${this.tempCustomer._id}`)
+        .send(updatedCustomer)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
   });
 });
