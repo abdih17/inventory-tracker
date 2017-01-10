@@ -65,5 +65,18 @@ describe('Cart Order Routes', function() {
         });
       });
     });
+
+    describe('With an invalid customer ID', () => {
+      it('should return a 404 status', done => {
+        request
+        .post(`${url}/api/orders/69`)
+        .send(exampleOrder)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
   });
 });
