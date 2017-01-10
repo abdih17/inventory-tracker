@@ -23,6 +23,15 @@ const exampleOrder = {
 };
 
 describe('Cart Order Routes', function() {
+  after(done => {
+    Promise.all([
+      Customer.remove({}),
+      CartOrder.remove({})
+    ])
+    .then(() => done())
+    .catch(done);
+  });
+
   describe('POST: /api/orders/:customerID/cartOrder', () => {
     before(done => {
       new Customer(exampleCustomer).save()
@@ -31,15 +40,6 @@ describe('Cart Order Routes', function() {
         exampleOrder.customerID = customer._id;
         done();
       })
-      .catch(done);
-    });
-
-    after(done => {
-      Promise.all([
-        Customer.remove({}),
-        CartOrder.remove({})
-      ])
-      .then(() => done())
       .catch(done);
     });
 
@@ -52,6 +52,7 @@ describe('Cart Order Routes', function() {
           if (err) return done(err);
           Customer.findById(this.tempCustomer._id)
           .then(customer => {
+            this.tempOrder = response.body;
             this.tempCustomer = customer;
             expect(response.status).to.equal(201);
             expect(response.body.customerID).to.equal(this.tempCustomer._id.toString());
@@ -87,6 +88,22 @@ describe('Cart Order Routes', function() {
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET: /api/orders/:orderID', () => {
+    describe('With a valid ID', () => {
+      it('should return an order', done => {
+        request
+        .get(`${url}/api/orders/${this.tempOrder._id}`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.customerID).to.equal(this.tempOrder.customerID);
+          expect(response.body.shippingAddress).to.equal(this.tempOrder.shippingAddress);
           done();
         });
       });
