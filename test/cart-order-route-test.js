@@ -78,5 +78,18 @@ describe('Cart Order Routes', function() {
         });
       });
     });
+
+    describe('With a valid ID, but no body', () => {
+      it('should return a 400 status', done => {
+        request
+        .post(`${url}/api/orders/${this.tempCustomer._id}/cartOrder`)
+        .send({})
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
   });
 });
