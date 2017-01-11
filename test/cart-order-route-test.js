@@ -38,7 +38,7 @@ describe('Cart Order Routes', function() {
     .catch(done);
   });
 
-  describe('POST: /api/orders/:customerID/cartOrder', () => {
+  describe('POST: /api/orders/:customerID/cart-order', () => {
     before(done => {
       new Customer(exampleCustomer).save()
       .then(customer => {
@@ -52,7 +52,7 @@ describe('Cart Order Routes', function() {
     describe('With a valid customer ID and body', () => {
       it('should return an order', done => {
         request
-        .post(`${url}/api/orders/${this.tempCustomer._id}/cartOrder`)
+        .post(`${url}/api/orders/${this.tempCustomer._id}/cart-order`)
         .send(exampleOrder)
         .end((err, response) => {
           if (err) return done(err);
@@ -89,7 +89,7 @@ describe('Cart Order Routes', function() {
     describe('With a valid ID, but no body', () => {
       it('should return a 400 status', done => {
         request
-        .post(`${url}/api/orders/${this.tempCustomer._id}/cartOrder`)
+        .post(`${url}/api/orders/${this.tempCustomer._id}/cart-order`)
         .send({})
         .end((err, response) => {
           expect(err).to.be.an('error');
