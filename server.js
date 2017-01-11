@@ -9,6 +9,7 @@ const Promise = require('bluebird');
 const debug = require('debug')('inventory:server');
 
 const customerRouter = require('./route/customer-route.js');
+const storeRouter = require('./route/store-route.js');
 const errors = require('./lib/error-middleware.js');
 
 dotenv.load();
@@ -22,6 +23,7 @@ mongoose.connect(process.env.MONGODB_URI);
 app.use(cors());
 app.use(morgan('dev'));
 app.use(customerRouter);
+app.use(storeRouter);
 app.use(errors);
 
 app.listen(PORT, () => {
