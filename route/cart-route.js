@@ -25,3 +25,13 @@ cartRouter.get('/api/products/:productID', function(request, response, next) {
   .then(product => response.json(product))
   .catch(() => next(createError(404, 'Product not found.')));
 });
+
+cartRouter.put('/api/products/:productID', parseJSON, function(request, response, next) {
+  debug('PUT: /api/products/:productID');
+
+  if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body supplied.'));
+
+  CartProduct.findByIdAndUpdate(request.params.productID, request.body, {new: true})
+  .then(product => response.json(product))
+  .catch(() => next(createError(404, 'Product not found.')));
+});
