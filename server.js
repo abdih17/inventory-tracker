@@ -10,6 +10,9 @@ const debug = require('debug')('inventory:server');
 
 const customerRouter = require('./route/customer-route.js');
 const employeeRouter = require('./route/employee-route.js');
+const cartOrderRouter = require('./route/cart-order-route.js');
+const cartProductRouter = require('./route/cart-route.js');
+const storeRouter = require('./route/store-route.js');
 const errors = require('./lib/error-middleware.js');
 
 dotenv.load();
@@ -22,8 +25,11 @@ mongoose.connect(process.env.MONGODB_URI);
 
 app.use(cors());
 app.use(morgan('dev'));
+app.use(cartOrderRouter);
 app.use(customerRouter);
 app.use(employeeRouter);
+app.use(cartProductRouter);
+app.use(storeRouter);
 app.use(errors);
 
 app.listen(PORT, () => {
