@@ -521,18 +521,18 @@ describe('Employee route', function() {
       });
     });
 
-  //   describe('With a valid ID and admin status, but bad auth', () => {
-  //     it('should return a 401 status', done => {
-  //       // TODO: build out this test
-  //       request.delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
-  //       .end()
-  //     });
-  //   });
-  //
-  //   describe('With an invalid ID', () => {
-  //     it('should return a 404 status', done => {
-  //       // TODO: build out this test
-  //     });
-  //   });
-  // });
+    // describe('With a valid ID and admin status, but bad auth', () => {
+    //   it('should return a 401 status', done => {
+    //     // TODO: build out this test
+    //     request.delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
+    //     .end()
+    //   });
+    // });
+    //
+    // describe('With an invalid ID', () => {
+    //   it('should return a 404 status', done => {
+    //     // TODO: build out this test
+    //   });
+    // });
+  });
 });
