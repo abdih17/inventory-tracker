@@ -129,4 +129,23 @@ describe('Cart Product Routes', function() {
       });
     });
   });
+
+  describe('PUT: /api/products/:productID', () => {
+    describe('With a valid ID and body', () => {
+      it('should return an updated product', done => {
+        request
+        .put(`${url}/api/products/${this.tempProduct._id}`)
+        .send({name: 'New name'})
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.name).to.equal('New name');
+          expect(response.body.desc).to.equal(this.tempProduct.desc);
+          expect(response.body.quantity).to.equal(this.tempProduct.quantity);
+          expect(response.body.cartOrderID).to.equal(this.tempProduct.cartOrderID.toString());
+          done();
+        });
+      });
+    });
+  });
 });
