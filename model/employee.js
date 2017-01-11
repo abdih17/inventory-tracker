@@ -17,8 +17,8 @@ const employeeSchema = Schema({
   password: { type: String, required: true },
   // storeID: { TODO: reference to store, build out later },
   admin: { type: Boolean, required: true },
-  shipping: { type: Boolean },
-  receiving: { type: Boolean }
+  shipping: { type: Boolean, default: false },
+  receiving: { type: Boolean, default: false }
 });
 
 employeeSchema.pre('save', function(next) {
