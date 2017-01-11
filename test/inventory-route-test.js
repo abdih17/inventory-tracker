@@ -22,6 +22,12 @@ const invalidInventory = {
   quantity: '24'
 };
 
+// const updatedInventory = {
+//   name: 'Updated name',
+//   desc: 'Updated desc',
+//   quantity: '48'
+// };
+
 describe('Inventory Route', function () {
   describe('POST: /api/store/:storeID/inventory', () => {
     afterEach(done => {
@@ -72,8 +78,6 @@ describe('Inventory Route', function () {
     });
   });
 
-  //***********************************************
-
   describe('POST: /api/inventoryOrder/:inventoryOrderID/inventory', () => {
     afterEach(done => {
       Inventory.remove({})
@@ -117,6 +121,50 @@ describe('Inventory Route', function () {
           expect(res.status).to.equal(400);
           expect(res.body).to.be.an('object');
           expect(res.body).to.be.empty;
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET: /api/inventory/:id', function() {
+    describe('with a valid body', function () {
+      before( done => {
+        let inventory = new Inventory(exampleInventory);
+
+        inventory.save()
+        .then( inventory => {
+          this.tempInventory = inventory;
+          done();
+        })
+        .catch(done);
+      });
+
+      after( done => {
+        Inventory.remove({})
+        .then(() => done())
+        .catch(done);
+      });
+
+      it('should return an inventory', done => {
+        request.get(`${url}/api/inventory/${this.tempInventory._id}`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.name).to.equal('Test name');
+          expect(res.body.desc).to.equal('Test description');
+          expect(res.body.quantity.toString()).to.equal(exampleInventory.quantity);
+          done();
+        });
+      });
+    });
+
+    describe('with an invalid inventory id', () => {
+      it('should return a 404 status', done => {
+        request.get(`${url}/api/inventory/23`)
+        .end((err, res) => {
+          expect(err).to.be.an('error');
+          expect(res.status).to.equal(404);
           done();
         });
       });
