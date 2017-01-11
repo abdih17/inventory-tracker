@@ -3,10 +3,24 @@
 const expect = require('chai').expect;
 const request = require('superagent');
 const Store = require('../model/store.js');
+const Customer = require('../model/customer.js');
+const CartOrder = require('../model/cart-order.js');
 
 require('../server.js');
 
 const url = `http://localhost:${process.env.PORT}`;
+
+const sampleCustomer = {
+  name: 'Test user',
+  username: 'Test username',
+  password: 'Testword',
+  email: 'test@test.com',
+  address: 'Test address'
+};
+
+const sampleOrder = {
+  products: []
+};
 
 const exampleStore = {
   name: 'Example Store',
@@ -84,6 +98,16 @@ describe('Store Routes', function() {
         new Store(exampleStore).save()
         .then( store => {
           this.tempStore = store;
+          sampleOrder.storeID = store._id;
+          return new Customer(sampleCustomer).save();
+        })
+        .then( customer => {
+          this.tempCustomer = customer;
+          sampleOrder.customerID = customer._id;
+          return Customer.addCartOrder(customer._id, this.tempStore._id, sampleOrder);
+        })
+        .then( order => {
+          this.tempOrder = order;
           done();
         })
         .catch(done);
@@ -91,7 +115,11 @@ describe('Store Routes', function() {
 
       after( done => {
         if(this.tempStore) {
-          Store.remove({})
+          Promise.all([
+            Store.remove({}),
+            Customer.remove({}),
+            CartOrder.remove({})
+          ])
           .then( () => done())
           .catch(done);
           return;
@@ -103,6 +131,8 @@ describe('Store Routes', function() {
         request.get(`${url}/api/store/${this.tempStore._id}`)
         .end((err, res) => {
           if(err) return done(err);
+          expect(res.body.outgoing.length).to.equal(1);
+          expect(res.body.outgoing[0].storeID).to.equal(res.body._id.toString());
           expect(res.status).to.equal(200);
           expect(res.body.name).to.equal(exampleStore.name);
           done();
