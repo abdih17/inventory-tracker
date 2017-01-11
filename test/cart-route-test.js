@@ -173,4 +173,18 @@ describe('Cart Product Routes', function() {
       });
     });
   });
+
+  describe('DELETE: /api/products/:productID', () => {
+    describe('With a valid ID', () => {
+      it('should return a 204 status', done => {
+        request
+        .delete(`${url}/api/products/${this.tempProduct._id}`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(204);
+          done();
+        });
+      });
+    });
+  });
 });
