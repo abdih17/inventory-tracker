@@ -11,6 +11,7 @@ const debug = require('debug')('inventory:server');
 const customerRouter = require('./route/customer-route.js');
 const cartOrderRouter = require('./route/cart-order-route.js');
 const cartProductRouter = require('./route/cart-route.js');
+const storeRouter = require('./route/store-route.js');
 const errors = require('./lib/error-middleware.js');
 
 dotenv.load();
@@ -26,6 +27,7 @@ app.use(morgan('dev'));
 app.use(cartOrderRouter);
 app.use(customerRouter);
 app.use(cartProductRouter);
+app.use(storeRouter);
 app.use(errors);
 
 app.listen(PORT, () => {
