@@ -160,5 +160,17 @@ describe('Cart Product Routes', function() {
         });
       });
     });
+
+    describe('With a valid ID, but invalid body', () => {
+      it('should return a 400 error', done => {
+        request
+        .put(`${url}/api/products/${this.tempProduct._id}`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
   });
 });
