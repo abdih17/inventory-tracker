@@ -159,4 +159,164 @@ describe('Employee route', function() {
       });
     });
   });
+
+  // ************** GET TESTS **************
+  describe('GET: /api/signin', () => {
+    after(done => {
+      Employee.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('with a valid body (admin employee)', () => {
+      before( done => {
+        let employeeAdmin = new Employee(exampleAdminEmployee);
+
+        employeeAdmin.hashPassword(employeeAdmin.password)
+        .then(employeeAdmin => employeeAdmin.save())
+        .then(employeeAdmin => {
+          this.tempEmployeeAdmin = employeeAdmin;
+          done();
+        })
+        .catch(done);
+      });
+
+      it('should return a 200 status', done => {
+        request.get(`${url}/api/employee/signin`)
+        .auth('testusername1', 'TestPW123')
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.name).to.equal(exampleAdminEmployee.name);
+          expect(response.body.username).to.equal(exampleAdminEmployee.username);
+          expect(response.body.email).to.equal(exampleAdminEmployee.email);
+          expect(response.body.admin).to.equal(true);
+          expect(response.body.password).to.equal(undefined);
+          done();
+        });
+      });
+    });
+
+    describe('with a valid body (new employee, role unassigned)', () => {
+      before( done => {
+        let employeeUnassigned = new Employee(exampleEmployeeUnassigned);
+
+        employeeUnassigned.hashPassword(employeeUnassigned.password)
+        .then(employeeUnassigned => employeeUnassigned.save())
+        .then(employeeUnassigned => {
+          this.tempEmployeeUnassigned = employeeUnassigned;
+          done();
+        })
+        .catch(done);
+      });
+
+      it('should return a 200 status', done => {
+        request.get(`${url}/api/employee/signin`)
+        .auth('testusername2', 'TestPW321')
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.name).to.equal(exampleEmployeeUnassigned.name);
+          expect(response.body.username).to.equal(exampleEmployeeUnassigned.username);
+          expect(response.body.email).to.equal(exampleEmployeeUnassigned.email);
+          expect(response.body.admin).to.equal(false);
+          expect(response.body.receiving).to.equal(false);
+          expect(response.body.shipping).to.equal(false);
+          expect(response.body.password).to.equal(undefined);
+          done();
+        });
+      });
+    });
+
+    describe('with a valid body (non-admin, assigned employee)', () => {
+      before( done => {
+        let employeeAssigned = new Employee(exampleEmployeeAssigned);
+
+        employeeAssigned.hashPassword(employeeAssigned.password)
+        .then(employeeAssigned => employeeAssigned.save())
+        .then(employeeAssigned => {
+          this.tempEmployeeAssigned = employeeAssigned;
+          done();
+        })
+        .catch(done);
+      });
+
+      it('should return a 200 status', done => {
+        request.get(`${url}/api/employee/signin`)
+        .auth('testusername3', 'TestPW456')
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.name).to.equal(exampleEmployeeAssigned.name);
+          expect(response.body.username).to.equal(exampleEmployeeAssigned.username);
+          expect(response.body.email).to.equal(exampleEmployeeAssigned.email);
+          expect(response.body.admin).to.equal(false);
+          expect(response.body.receiving).to.equal(true);
+          expect(response.body.shipping).to.equal(false);
+          expect(response.body.password).to.equal(undefined);
+          done();
+        });
+      });
+    });
+
+    describe('with a valid body (employee with default username, equal to email)', () => {
+      before( done => {
+        let employeeDefaultUsername = new Employee(exampleEmployeeDefaultUsername);
+
+        employeeDefaultUsername.hashPassword(employeeDefaultUsername.password)
+        .then(employeeDefaultUsername => employeeDefaultUsername.save())
+        .then(employeeDefaultUsername => {
+          this.tempEmployeeDefaultUsername = employeeDefaultUsername;
+          done();
+        })
+        .catch(done);
+      });
+
+      it('should return a 200 status', done => {
+        request.get(`${url}/api/employee/signin`)
+        .auth('test4@example.com', 'TestPW789')
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.name).to.equal(exampleEmployeeDefaultUsername.name);
+          expect(response.body.username).to.equal(exampleEmployeeDefaultUsername.email);
+          expect(response.body.email).to.equal(exampleEmployeeDefaultUsername.email);
+          expect(response.body.admin).to.equal(false);
+          expect(response.body.receiving).to.equal(true);
+          expect(response.body.password).to.equal(undefined);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid password for a valid username', () => {
+      it('should return a 401 \'unauthorized\' error', done => {
+        request.get(`${url}/api/employee/signin`)
+        .auth('testusername1', 'InvalidPassword')
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid username', () => {
+      it('should return a 401 \'unauthorized\' error', done => {
+        request.get(`${url}/api/employee/signin`)
+        .auth('testturtle82', 'shucksTurtle39')
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+  });
+
+  // ************** PUT TESTS **************
+  // TODO: BUILD OUT PUT TESTS
+
+  // ************** DELETE TESTS **************
+  // TODO: BUILD OUT DELETE TESTS
 });
