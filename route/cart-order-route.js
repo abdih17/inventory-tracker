@@ -9,7 +9,7 @@ const Customer = require('../model/customer.js');
 
 const cartOrderRouter = module.exports = Router();
 
-cartOrderRouter.post('/api/orders/:customerID/cartOrder', parseJSON, function(request, response, next) {
+cartOrderRouter.post('/api/orders/:customerID/cart-order', parseJSON, function(request, response, next) {
   debug('POST: /api/orders/:customerID/cartOrder');
 
   if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body posted.'));
@@ -23,6 +23,7 @@ cartOrderRouter.get('/api/orders/:orderID', function(request, response, next) {
   debug('GET: /api/orders/:orderID');
 
   CartOrder.findById(request.params.orderID)
+  .populate('products')
   .then(order => response.json(order))
   .catch(() => next(createError(404, 'Not found.')));
 });

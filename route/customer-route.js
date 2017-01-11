@@ -34,6 +34,7 @@ customerRouter.get('/api/signin', basicAuth, function(req, res, next) {
   .then(customer => customer.validatePassword(req.auth.password))
   .then(customer => {
     return res.json({
+      id: customer._id,
       name: customer.name,
       address: customer.address,
       email: customer.email,
