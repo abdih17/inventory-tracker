@@ -30,3 +30,21 @@ employeeRouter.post('/api/employee/register', jsonParser, function(req, res, nex
   })
   .catch(next);
 });
+
+employeeRouter.get('/api/employee/signin', basicAuth, function(req, res, next) {
+  debug('GET Employee: /api/employee/signin');
+
+  Employee.findOne({ username: req.auth.username })
+  .then( employee => employee.validatePassword(req.auth.password))
+  .then( employee => {
+    return res.json({
+      name: employee.name,
+      username: employee.username,
+      email: employee.email,
+      admin: employee.admin,
+      receiving: employee.receiving,
+      shipping: employee.shipping,
+    });
+  })
+  .catch(() => next(createError(401, 'Invalid login')));
+});
