@@ -63,10 +63,29 @@ describe('Cart Product Routes', function() {
         .send(sampleProduct)
         .end((err, response) => {
           if (err) return done(err);
+          this.tempProduct = response.body;
           expect(response.status).to.equal(201);
           expect(response.body.name).to.equal(sampleProduct.name);
           expect(response.body.desc).to.equal(sampleProduct.desc);
           expect(response.body.quantity).to.equal(sampleProduct.quantity);
+          expect(response.body.cartOrderID).to.equal(this.tempOrder._id.toString());
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET: /api/products/:productID', () => {
+    describe('With a valid ID', () => {
+      it('should return a product', done => {
+        request
+        .get(`${url}/api/products/${this.tempProduct._id}`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body.name).to.equal(this.tempProduct.name);
+          expect(response.body.desc).to.equal(this.tempProduct.desc);
+          expect(response.body.quantity).to.equal(this.tempProduct.quantity);
           expect(response.body.cartOrderID).to.equal(this.tempOrder._id.toString());
           done();
         });

@@ -21,7 +21,7 @@ cartRouter.post('/api/orders/:cartOrderID/cart', parseJSON, function(request, re
 cartRouter.get('/api/products/:productID', function(request, response, next) {
   debug('GET: /api/products/:productID');
 
-  CartProduct.find(request.params.productID)
+  CartProduct.findById(request.params.productID)
   .then(product => response.json(product))
   .catch(() => next(createError(404, 'Product not found.')));
 });
