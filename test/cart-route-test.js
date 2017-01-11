@@ -41,7 +41,8 @@ describe('Cart Product Routes', function() {
     Promise.all([
       Customer.remove({}),
       CartOrder.remove({}),
-      CartProduct.remove({})
+      CartProduct.remove({}),
+      Store.remove({})
     ])
     .then(() => done())
     .catch(done);
