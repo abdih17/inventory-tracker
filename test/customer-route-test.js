@@ -27,6 +27,10 @@ const invalidCustomer = {
   address: '12345 nowheresville, test city, test state, 99999'
 };
 
+const exampleCartOrder = {
+  products: []
+};
+
 const updatedCustomer = {
   username: 'Usernam',
   name: 'Nam',
@@ -95,6 +99,10 @@ describe('Customer route', function() {
       .then(customer => customer.save())
       .then(customer => {
         this.tempCustomer = customer;
+        return Customer.addCartOrder(customer._id, exampleCartOrder);
+      })
+      .then(order => {
+        this.tempOrder = order;
         done();
       })
       .catch(done);
@@ -117,6 +125,8 @@ describe('Customer route', function() {
           expect(response.body.name).to.equal(exampleCustomer.name);
           expect(response.body.email).to.equal(exampleCustomer.email);
           expect(response.body.address).to.equal(exampleCustomer.address);
+          expect(response.body.currentOrders.length).to.equal(1);
+          expect(response.body.currentOrders[0].customerID).to.equal(this.tempCustomer._id.toString());
           expect(response.body.password).to.equal(undefined);
           expect(response.body.username).to.equal(undefined);
           done();
