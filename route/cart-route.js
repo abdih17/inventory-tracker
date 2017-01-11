@@ -35,3 +35,11 @@ cartRouter.put('/api/products/:productID', parseJSON, function(request, response
   .then(product => response.json(product))
   .catch(() => next(createError(404, 'Product not found.')));
 });
+
+cartRouter.delete('/api/products/:productID', function(request, response, next) {
+  debug('DELETE: /api/products/:productID');
+
+  CartOrder.removeCartProduct(request.params.productID)
+  .then(() => response.status(204).send())
+  .catch(() => next(createError(404, 'Product not found.')));
+});
