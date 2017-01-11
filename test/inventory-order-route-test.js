@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 const request = require('superagent');
 const Promise = require('bluebird');
 const InventoryOrder = require('../model/inventory-order.js');
+const InventoryProduct = require('../model/inventory.js');
 const Store = require('../model/store.js');
 
 require('../server.js');
@@ -30,6 +31,7 @@ describe('Inventory Order Routes', function() {
   after(done => {
     Promise.all([
       Store.remove({}),
+      InventoryProduct.remove({}),
       InventoryOrder.remove({})
     ])
     .then(() => done())
@@ -50,20 +52,17 @@ describe('Inventory Order Routes', function() {
     describe('with a valid store ID and body', () => {
       it('should return an order', done => {
         request
-        .post(`${url}/api/inventories/${this.tempStore._id}/inventory-order`)
+        .post(`${url}/api/store/${this.tempStore._id}/inventory-order`)
         .send(exampleInventoryOrder)
         .end((err, res) => {
           if (err) return done(err);
           Store.findById(this.tempStore._id)
           .then(store => {
             this.tempInventoryOrder = res.body;
-            this.tempStore = store;
             expect(res.status).to.equal(201);
-            expect(res.body.storeID).to.equal(this.tempStore._id.toString());
-            expect(res.body.address).to.equal(this.tempStore.address);
-            expect(res.body.name).to.equal(this.tempStore.name);
-            expect(this.tempStore.currentOrders.length).to.equal(1);
-            expect(this.tempStore.currentOrders[0].toString()).to.equal(res.body._id);
+            expect(res.body.storeID).to.equal(store._id.toString());
+            expect(store.incoming.length).to.equal(1);
+            expect(store.incoming[0].toString()).to.equal(res.body._id);
             done();
           })
           .catch(done);
@@ -74,7 +73,7 @@ describe('Inventory Order Routes', function() {
     describe('with an invalid store ID', () => {
       it('should return a 404 status', done => {
         request
-        .post(`${url}/api/inventories/invent`)
+        .post(`${url}/api/store/1234/inventory-order`)
         .send(exampleInventoryOrder)
         .end((err, res) => {
           expect(err).to.be.an('error');
@@ -87,7 +86,7 @@ describe('Inventory Order Routes', function() {
     describe('with a valid ID, but no body', () => {
       it('should return a 400 status', done => {
         request
-        .post(`${url}/api/inventories/${this.tempStore._id}/inventory-order`)
+        .post(`${url}/api/store/${this.tempStore._id}/inventory-order`)
         .send({})
         .end((err, res) => {
           expect(err).to.be.an('error');
@@ -116,9 +115,7 @@ describe('Inventory Order Routes', function() {
           if (err) return done(err);
           expect(res.status).to.equal(200);
           expect(res.body.inventories.length).to.equal(1);
-          expect(res.body.inventories[0].name).to.equal(exampleInventoryProduct.name);
           expect(res.body.storeID).to.equal(this.tempInventoryOrder.storeID);
-          expect(res.body.address).to.equal(this.tempIntempInventoryOrderrder.address);
           done();
         });
       });
@@ -137,17 +134,16 @@ describe('Inventory Order Routes', function() {
     });
   });
 
-  describe('PUT: /api/inventories/:orderID', () => {
+  describe('PUT: /api/inventories/:inventoryOrderID', () => {
     describe('with a valid ID and body', () => {
       it('should return an order', done => {
         request
         .put(`${url}/api/inventories/${this.tempInventoryOrder._id}`)
-        .send({address: 'new address'})
+        .send({test: 'asdfadsfa'})
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.address).to.equal('new address');
-          expect(res.body.storeID).to.equal(this.tempInventoryOrder.storeID);
+          expect(res.body.test).to.equal('asdfadsfa');
           done();
         });
       });
@@ -157,7 +153,7 @@ describe('Inventory Order Routes', function() {
       it('should return a 404 error', done => {
         request
         .put(`${url}/api/inventories/invent`)
-        .send({address: 'new address'})
+        .send({storeID: '0987'})
         .end((err, res) => {
           expect(err).to.be.an('error');
           expect(res.status).to.equal(404);
@@ -180,7 +176,7 @@ describe('Inventory Order Routes', function() {
     });
   });
 
-  describe('DELETE: /api/inventories/:orderID', () => {
+  describe('DELETE: /api/inventories/:inventoryID', () => {
     describe('with a valid ID', () => {
       it('should return a 204 status', done => {
         request
@@ -188,7 +184,6 @@ describe('Inventory Order Routes', function() {
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
-          expect(res.body.address).to.equal(undefined);
           done();
         });
       });
@@ -197,7 +192,7 @@ describe('Inventory Order Routes', function() {
     describe('with an invalid ID', () => {
       it('should return a 404 not found error', done => {
         request
-        .delete(`${url}/api/inventories/invent`)
+        .delete(`${url}/api/inventories/1234`)
         .end((err, res) => {
           expect(err).to.be.an('error');
           expect(res.status).to.equal(404);

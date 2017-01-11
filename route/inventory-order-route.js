@@ -5,7 +5,7 @@ const jsonParser = require('body-parser').json();
 const createError = require('http-errors');
 const debug = require('debug')('inventory:inventory-order-route');
 const InventoryOrder = require('../model/inventory-order.js');
-const Store = require('../model/customer.js');
+const Store = require('../model/store.js');
 
 const inventoryOrderRouter = module.exports = Router();
 
@@ -14,7 +14,7 @@ inventoryOrderRouter.post('/api/store/:storeID/inventory-order', jsonParser, fun
 
   if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body posted.'));
 
-  Store.addInventoryOrder(req.params.customerID, req.body)
+  Store.addInventoryOrder(req.params.storeID, req.body)
   .then(order => res.status(201).json(order))
   .catch(err => next(createError(404, err.message)));
 });
@@ -35,7 +35,7 @@ inventoryOrderRouter.put('/api/inventories/:inventoryOrderID', jsonParser, funct
 
   InventoryOrder.findByIdAndUpdate(req.params.inventoryOrderID, req.body, {new: true})
   .then(order => res.json(order))
-  .catch(() => next(createError(404, 'Not found.')));
+  .catch(() => next(createError(404, 'Inventory order not found.')));
 });
 
 inventoryOrderRouter.delete('/api/inventories/:inventoryOrderID', function(req, res, next) {
