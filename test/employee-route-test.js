@@ -316,6 +316,140 @@ describe('Employee route', function() {
 
   // ************** PUT TESTS **************
   // TODO: BUILD OUT PUT TESTS
+  describe('PUT: /api/employee/:employeeID', () => {
+    before( done => {
+      let employeeAdmin = new Employee(exampleAdminEmployee);
+
+      employeeAdmin.hashPassword(employeeAdmin.password)
+      .then(employeeAdmin => employeeAdmin.save())
+      .then(employeeAdmin => {
+        this.tempEmployeeAdmin = employeeAdmin;
+        return employeeAdmin.generateToken();
+      })
+      .then( tokenEmployeeAdmin => {
+        this.tempTokenEmployeeAdmin = tokenEmployeeAdmin;
+        done();
+      })
+      .catch(done);
+    });
+
+    // before( done => {
+    //   let employeeUnassigned = new Employee(exampleEmployeeUnassigned);
+    //
+    //   employeeUnassigned.hashPassword(employeeUnassigned.password)
+    //   .then(employeeUnassigned => employeeUnassigned.save())
+    //   .then(employeeUnassigned => {
+    //     this.tempEmployeeUnassigned = employeeUnassigned;
+    //     done();
+    //   })
+    //   .catch(done);
+    // });
+    //
+    // before( done => {
+    //   let employeeAssigned = new Employee(exampleEmployeeAssigned);
+    //
+    //   employeeAssigned.hashPassword(employeeAssigned.password)
+    //   .then(employeeAssigned => employeeAssigned.save())
+    //   .then(employeeAssigned => {
+    //     this.tempEmployeeAssigned = employeeAssigned;
+    //     done();
+    //   })
+    //   .catch(done);
+    // });
+    //
+    // before( done => {
+    //   let employeeDefaultUsername = new Employee(exampleEmployeeDefaultUsername);
+    //
+    //   employeeDefaultUsername.hashPassword(employeeDefaultUsername.password)
+    //   .then(employeeDefaultUsername => employeeDefaultUsername.save())
+    //   .then(employeeDefaultUsername => {
+    //     this.tempEmployeeDefaultUsername = employeeDefaultUsername;
+    //     done();
+    //   })
+    //   .catch(done);
+    // });
+
+    after(done => {
+      Employee.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('**************With a valid ID and body (admin employee)', () => {
+      it('should return a 200 status', done => {
+        request.put(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
+        .send({ username: 'updatedname1', email: 'test55@example.com' })
+        .end((err, response) => {
+          if (err) return done(err);
+          console.log(this.tempTokenEmployeeAdmin);
+          expect(response.status).to.equal(200);
+          expect(response.text).to.equal('Update successful');
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid ID but valid body', () => {
+      it('should return a 404 status', done => {
+        request.put(`${url}/api/employee/69538438567u238472`)
+        .send({ username: 'updatedinv1', email: 'test55@example.com' })
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
+
+    describe('With a valid ID, but invalid auth', () => {
+      it('should return a 401 status', done => {
+        request.put(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
+        .send({ username: 'updatedinv2', email: 'test55@example.com' })
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+
+    describe('With a valid ID, valid auth, but no body', () => {
+      it('should return a 400 status', done => {
+        request.put(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
+        .send('')
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
+  });
+
+  // describe('With a valid ID and body (admin employee)', next)
+  // username: 'testusername1',
+  // password: 'TestPW123',
+  //
+  // describe('With a valid ID and body (new employee, role unassigned)', next)
+  // username: 'testusername2',
+  // password: 'TestPW321',
+  //
+  // describe('With a valid ID and body (non-admin, assigned employee)', next)
+  // username: 'testusername3',
+  // password: 'TestPW456',
+  //
+  // describe('With a valid ID and body (employee with default username, equal to email)', next)
+  // username: 'test4@example.com',
+  // password: 'TestPW789',
 
   // ************** DELETE TESTS **************
   // TODO: BUILD OUT DELETE TESTS
