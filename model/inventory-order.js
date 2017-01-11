@@ -18,33 +18,46 @@ const InventoryOrder = module.exports = mongoose.model('inventoryOrder', invento
 InventoryOrder.addInventoryProduct = function(id, product) {
   debug('addInventoryProduct');
 
-  return InventoryOrder.findById(id)
-  .then(order => {
-    product.inventoryOrderID = order._id;
-    this.tempOrder = order;
-    return new InventoryProduct(product).save();
-  })
-  .then(product => {
-    this.tempOrder.inventories.push(product._id);
-    this.tempProduct = product;
-    return this.tempOrder.save();
-  })
-  .then(() => this.tempProduct)
-  .catch(err => Promise.reject(createError(404, err.message)));
+  return new Promise((resolve, reject) => {
+    InventoryOrder.findById(id)
+    .then(order => {
+
+      if(!order) return reject('Inventory order not found.');
+
+      product.inventoryOrderID = order._id;
+      this.tempOrder = order;
+      return new InventoryProduct(product).save();
+    })
+    .then(product => {
+      console.log(this.tempOrder);
+      this.tempOrder.inventories.push(product._id);
+      this.tempProduct = product;
+      return this.tempOrder.save();
+    })
+    .then(() => resolve(this.tempProduct));
+  });
 };
 
 InventoryOrder.removeInventoryProduct = function(id) {
   debug('removeInventoryProduct');
 
-  return InventoryProduct.findById(id)
-  .then(product => {
-    this.tempProduct = product;
-    return InventoryProduct.findByIdAndRemove(product._id);
-  })
-  .then(() => InventoryOrder.findById(this.tempProduct.inventoryOrderID))
-  .then(order => {
-    order.inventories.splice(order.inventories.indexOf(this.tempProduct._id), 1);
-    order.save();
-  })
-  .catch(err => Promise.reject(createError(404, err.message)));
+  return new Promise((resolve, reject) => {
+    InventoryProduct.findById(id)
+    .then(product => {
+
+      if(!product) return reject('Inventory product not found');
+
+      this.tempProduct = product;
+      return InventoryProduct.findByIdAndRemove(product._id);
+    })
+    .then(() => InventoryOrder.findById(this.tempProduct.inventoryOrderID))
+    .then(order => {
+
+      if(!order) return reject('Order not found.');
+
+      order.inventories.splice(order.inventories.indexOf(this.tempProduct._id), 1);
+      return order.save();
+    })
+    .then(() => resolve());
+  });
 };

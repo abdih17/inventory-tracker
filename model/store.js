@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const debug = require('debug')('inventory:store');
 const createError = require('http-errors');
 const Promise = require('bluebird');
-const InventoryOrder = require('./inventory-order.js')
+const InventoryOrder = require('./inventory-order.js');
 const Schema = mongoose.Schema;
 const Employee = require('../model/employee.js');
 
@@ -75,46 +75,46 @@ Store.findByIdAndAddEmployee = function(id, employee) {
   });
 };
 
-// Store.findByIdAndAddToIncoming = function(id, inventory) {
-//   debug('findByIdAndAddToIncoming');
+
+// Store.completeInventoryOrder = function(id, inventory) {
+  // debug('completeInventoryOrder');
+  //
+  // return Store.findById(id)
+  // .then( store => {
+  //   this.tempStore = store;
+  //   inventory.storeID = store._id;
+  //   return new InventoryProduct(product).save();
+  // })
+  // .then(product => {
+  //   this.tempStore.current.push(product._id);
+  //   this.tempProduct = product;
+  //   return this.tempStore.save();
+  // })
+  // .then(() => this.tempProduct)
+  // .catch(err => Promise.reject(createError(404, 'store not found'));
+// };
+
+
+// Store.addInventoryOrder = function(id, inventory) {
+//   debug('addInventoryOrder');
 //
 //   return Store.findById(id)
 //   .catch( err => Promise.reject(createError(404, err.message)))
 //   .then( store => {
 //     inventory.storeID = store._id;
 //     this.tempStore = store;
-//     return new inventory(inventory).save();
+//     return new InventoryOrder(inventory).save();
 //   })
 //   .then( inventory => {
 //     this.tempStore.incoming.push(inventory._id);
-//     this.tempInventory = inventory;
+//     this.tempInventoryOrder = inventory;
 //     return this.tempStore.save();
 //   })
 //   .then( () => {
-//     return this.tempInventory;
-//   });
+//     return this.tempInventoryOrder;
+//   })
+//   .catch(err => Promise.reject(createError(404, err.message)));
 // };
-
-Store.addInventoryProduct = function(id, inventory) {
-  debug('addInventoryProduct');
-
-  return Store.findById(id)
-  .catch( err => Promise.reject(createError(404, err.message)))
-  .then( store => {
-    inventory.storeID = store._id;
-    this.tempStore = store;
-    return new InventoryOrder(inventory).save();
-  })
-  .then( inventory => {
-    this.tempStore.incoming.push(inventory._id);
-    this.tempInventory = inventory;
-    return this.tempStore.save();
-  })
-  .then( () => {
-    return this.tempInventoryOrder;
-  })
-  .catch(err => Promise.reject(createError(404, err.message)));
-};
 
 // Store.findByIdAndAddToCurrent = function(id, inventoryOrder) {
 //   debug('findByIdAndAddToCurrent');

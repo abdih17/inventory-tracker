@@ -18,7 +18,10 @@ inventoryRouter.post('/api/store/:storeID/inventory', jsonParser, function(req, 
   .then( inventory => {
     res.status(201).json(inventory);
   })
-  .catch( () => next(createError(404, 'Inventory order not found')));
+  .catch( (err) => {
+    console.log(err);
+    next(createError(404, 'Inventory order not found'));
+  });
 });
 
 inventoryRouter.post('/api/inventoryOrders/:inventoryOrderID/inventory', jsonParser, function(req, res, next) {
@@ -26,7 +29,7 @@ inventoryRouter.post('/api/inventoryOrders/:inventoryOrderID/inventory', jsonPar
 
   if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body included.'));
 
-  InventoryOrder.addInventoryProduct(req.params.inventoryOrderID, req.body)
+  InventoryOrder.addInventoryOrder(req.params.inventoryOrderID, req.body)
   .then( inventory => {
     res.status(201).json(inventory);
   })

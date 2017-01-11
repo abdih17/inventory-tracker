@@ -21,6 +21,13 @@ const exampleInventoryOrder = {
   inventories: []
 };
 
+const exampleStore = {
+  name: 'Test name',
+  storeNumber: '1234',
+  address: 'Test address',
+  timestamp: Date.now()
+};
+
 describe('Inventory Product Routes', function () {
   after(done => {
     Promise.all([
@@ -33,32 +40,26 @@ describe('Inventory Product Routes', function () {
   });
 
   describe('POST: /api/store/:storeID/inventory', () => {
-    // beforeEach(done => {
-    //   new InventoryProduct(exampleInventoryProduct).save()
-    //   .then(inventory => {
-    //     this.tempInventoryProduct = inventory;
-    //     done();
-    //   })
-    //   .catch(done);
-    // });
-
     before(done => {
-      new Store(exampleInventoryProduct).save()
+      new Store(exampleStore).save()
       .then(store => {
         this.tempStore = store;
-        exampleInventoryOrder.storeID = store._id;
         return Store.addInventoryOrder(store._id, exampleInventoryOrder);
       })
       .then(inventoryOrder => {
+        console.log('jhwdgfcjsdgfksfhv', inventoryOrder);
         this.tempInventoryOrder = inventoryOrder;
         exampleInventoryProduct.orderID = inventoryOrder._id;
         done();
       })
-      .catch(done);
+      .catch((err) => {
+        console.log(err);
+        done(err);
+      });
     });
 
     describe('with a valid id and body', () => {
-      it('should return an inventory', done => {
+      it.only('should return an inventory', done => {
         request.post(`${url}/api/store/:storeID/inventory`)
         .send(exampleInventoryProduct)
         .end((err, res) => {
