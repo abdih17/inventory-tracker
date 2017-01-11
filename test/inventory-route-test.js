@@ -22,11 +22,11 @@ const invalidInventory = {
   quantity: '24'
 };
 
-// const updatedInventory = {
-//   name: 'Updated name',
-//   desc: 'Updated desc',
-//   quantity: '48'
-// };
+const updatedInventory = {
+  name: 'Updated name',
+  desc: 'Updated desc',
+  quantity: '48'
+};
 
 describe('Inventory Route', function () {
   describe('POST: /api/store/:storeID/inventory', () => {
@@ -128,7 +128,7 @@ describe('Inventory Route', function () {
   });
 
   describe('GET: /api/inventory/:id', function() {
-    describe('with a valid body', function () {
+    describe('with a valid id and body', function () {
       before( done => {
         let inventory = new Inventory(exampleInventory);
 
@@ -165,6 +165,71 @@ describe('Inventory Route', function () {
         .end((err, res) => {
           expect(err).to.be.an('error');
           expect(res.status).to.equal(404);
+          expect(res.body.name).to.equal(undefined);
+          done();
+        });
+      });
+    });
+//POST routes
+
+  describe('PUT: /api/inventory/inventoryID', () => {
+    describe('with a valid body', function () {
+      before( done => {
+        let inventory = new Inventory(exampleInventory);
+
+        inventory.save()
+        .then( inventory => {
+          this.tempInventory = inventory;
+          done();
+        })
+        .catch(done);
+      });
+
+      after( done => {
+        Inventory.remove({})
+        .then(() => done())
+        .catch(done);
+      });
+    });
+
+    describe('with a valid ID and body', () => {
+      it('should return an inventory', done => {
+        request
+        .put(`${url}/api/inventory/${this.tempInventory._id}`)
+        .send(updatedInventory)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.name).to.equal('Test Update');
+          expect(res.body.desc).to.equal('Test description');
+          expect(res.body.quantity).to.equal('48');
+          done();
+        });
+      });
+    });
+
+    describe('With a valid ID, but invalid body', () => {
+      it('should return a 400 error', done => {
+        request
+        .put(`${url}/api/assignment/${this.tempAssignment._id}`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          expect(response.body.name).to.equal(undefined);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid ID, but valid body', () => {
+      it('should return a 404 error', done => {
+        request
+        .put(`${url}/api/assignment/69`)
+        .send({name: 'Weasel'})
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          expect(response.body.name).to.equal(undefined);
           done();
         });
       });
