@@ -17,9 +17,7 @@ const customerSchema = Schema({
   },
   username: {
     type: String,
-    required: true,
-    unique: true
-    // TODO: stretch goal- set up default username to email
+    unique: true,
   },
   email: {
     type: String,
@@ -44,6 +42,11 @@ const customerSchema = Schema({
       type: String
     }
   ]
+});
+
+customerSchema.pre('save', function(next) {
+  if(!this.username) this.username = this.email;
+  next();
 });
 
 customerSchema.methods.hashPassword = function(password) {

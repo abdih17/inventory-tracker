@@ -44,6 +44,13 @@ const updatedCustomer = {
   password: 'newPassword'
 };
 
+const noUsernameCustomer = {
+  name: 'Name',
+  address: 'address',
+  email: 'someEmail@mail.com',
+  password: 'somePassword'
+};
+
 describe('Customer route', function() {
   describe('POST: /api/signup', () => {
     afterEach(done => {
@@ -65,6 +72,21 @@ describe('Customer route', function() {
           expect(response.status).to.equal(201);
           expect(response.body).to.be.a('string');
           expect(response.body).to.equal(exampleCustomer.username);
+          done();
+        });
+      });
+    });
+
+    describe('With a valid body but no username', () => {
+      it('should return a username', done => {
+        request
+        .post(`${url}/api/signup`)
+        .send(noUsernameCustomer)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(201);
+          expect(response.body).to.be.a('string');
+          expect(response.body).to.equal(noUsernameCustomer.email);
           done();
         });
       });
