@@ -9,6 +9,8 @@ const Promise = require('bluebird');
 const debug = require('debug')('inventory:server');
 
 const customerRouter = require('./route/customer-route.js');
+const cartOrderRouter = require('./route/cart-order-route.js');
+const cartProductRouter = require('./route/cart-route.js');
 const storeRouter = require('./route/store-route.js');
 const errors = require('./lib/error-middleware.js');
 
@@ -22,7 +24,9 @@ mongoose.connect(process.env.MONGODB_URI);
 
 app.use(cors());
 app.use(morgan('dev'));
+app.use(cartOrderRouter);
 app.use(customerRouter);
+app.use(cartProductRouter);
 app.use(storeRouter);
 app.use(errors);
 
