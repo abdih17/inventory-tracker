@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const request = require('superagent');
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
-const Customer = require('../model/employee.js');
+const Employee = require('../model/employee.js');
 
 mongoose.Promise = Promise;
 
@@ -13,34 +13,34 @@ require('../server.js');
 const url = `http://localhost:${process.env.PORT}`;
 
 const exampleAdminEmployee = {
-  name: 'Test Name',
-  username: 'testusername',
+  name: 'Test Admin Name',
+  username: 'testusername1',
   password: 'TestPW123',
-  email: 'test@example.com',
+  email: 'test1@example.com',
   admin: true
 };
 
 const exampleEmployeeUnassigned = {
-  name: 'Test Name',
-  username: 'testusername',
-  password: 'TestPW123',
-  email: 'test@example.com',
+  name: 'Test New Employee Name',
+  username: 'testusername2',
+  password: 'TestPW321',
+  email: 'test2@example.com',
   admin: false
 };
 
 const exampleEmployeeAssigned = {
-  name: 'Test Name',
-  username: 'testusername',
-  password: 'TestPW123',
-  email: 'test@example.com',
+  name: 'Test Receiving Employee Name',
+  username: 'testusername3',
+  password: 'TestPW456',
+  email: 'test3@example.com',
   admin: false,
   receiving: true
 };
 
 const exampleEmployeeDefaultUsername = {
-  name: 'Test Name',
-  password: 'TestPW123',
-  email: 'test@example.com',
+  name: 'Test Default Name',
+  password: 'TestPW789',
+  email: 'test4@example.com',
   admin: false,
   receiving: true
 };
@@ -49,22 +49,24 @@ const invalidEmployee = {
   nam: 'Invalid Name',
   username: 'testusernameinv',
   password: 'shucksTurtle99',
-  email: 'test@example.com',
+  email: 'test5@example.com',
   admin: true
 };
 
 const updatedEmployeePrivileges = {
   name: 'Updated Name',
   username: 'updatedname',
-  email: 'test@test.com',
+  email: 'test6@example.com',
   admin: false,
   shipping: true
 };
 
-describe('Customer route', function() {
+describe('Employee route', function() {
+
+  // ************** POST TESTS **************
   describe('POST: /api/employee/register', () => {
     afterEach(done => {
-      Customer.remove({})
+      Employee.remove({})
       .then(() => done())
       .catch(done);
     });
