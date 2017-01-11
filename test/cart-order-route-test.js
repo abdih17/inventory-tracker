@@ -5,6 +5,7 @@ const request = require('superagent');
 const Promise = require('bluebird');
 const CartOrder = require('../model/cart-order.js');
 const Customer = require('../model/customer.js');
+const Store = require('../model/store.js');
 
 require('../server.js');
 
@@ -24,6 +25,12 @@ const exampleProduct = {
   quantity: 100
 };
 
+const exampleStore = {
+  name: 'Test store',
+  storeNumber: '1234',
+  address: 'Test store address'
+};
+
 const exampleOrder = {
   products: []
 };
@@ -31,6 +38,7 @@ const exampleOrder = {
 describe('Cart Order Routes', function() {
   after(done => {
     Promise.all([
+      Store.remove({}),
       Customer.remove({}),
       CartOrder.remove({})
     ])
@@ -38,12 +46,17 @@ describe('Cart Order Routes', function() {
     .catch(done);
   });
 
-  describe('POST: /api/orders/:customerID/cart-order', () => {
+  describe('POST: /api/orders/:customerID/:storeID/cart-order', () => {
     before(done => {
       new Customer(exampleCustomer).save()
       .then(customer => {
         this.tempCustomer = customer;
         exampleOrder.customerID = customer._id;
+        return new Store(exampleStore).save();
+      })
+      .then(store => {
+        this.tempStore = store;
+        exampleOrder.storeID = store._id;
         done();
       })
       .catch(done);
@@ -52,20 +65,27 @@ describe('Cart Order Routes', function() {
     describe('With a valid customer ID and body', () => {
       it('should return an order', done => {
         request
-        .post(`${url}/api/orders/${this.tempCustomer._id}/cart-order`)
+        .post(`${url}/api/orders/${this.tempCustomer._id}/${this.tempStore._id}/cart-order`)
         .send(exampleOrder)
         .end((err, response) => {
           if (err) return done(err);
           Customer.findById(this.tempCustomer._id)
           .then(customer => {
-            this.tempOrder = response.body;
             this.tempCustomer = customer;
+            return Store.findById(this.tempStore._id);
+          })
+          .then(store => {
+            this.tempStore = store;
+            this.tempOrder = response.body;
             expect(response.status).to.equal(201);
+            expect(response.body.storeID).to.equal(this.tempStore._id.toString());
             expect(response.body.customerID).to.equal(this.tempCustomer._id.toString());
             expect(response.body.shippingAddress).to.equal(this.tempCustomer.address);
             expect(response.body.shippingName).to.equal(this.tempCustomer.name);
             expect(this.tempCustomer.currentOrders.length).to.equal(1);
             expect(this.tempCustomer.currentOrders[0].toString()).to.equal(response.body._id);
+            expect(this.tempStore.outgoing.length).to.equal(1);
+            expect(this.tempStore.outgoing[0].toString()).to.equal(response.body._id);
             done();
           })
           .catch(done);
@@ -89,7 +109,7 @@ describe('Cart Order Routes', function() {
     describe('With a valid ID, but no body', () => {
       it('should return a 400 status', done => {
         request
-        .post(`${url}/api/orders/${this.tempCustomer._id}/cart-order`)
+        .post(`${url}/api/orders/${this.tempCustomer._id}/${this.tempStore._id}/cart-order`)
         .send({})
         .end((err, response) => {
           expect(err).to.be.an('error');

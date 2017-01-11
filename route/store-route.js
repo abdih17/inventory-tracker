@@ -23,6 +23,7 @@ storeRouter.get('/api/store/:id', function(req, res, next) {
   debug('GET: /api/store/:id');
 
   Store.findById(req.params.id)
+  .populate('outgoing')
   .then( store => res.json(store))
   .catch( err => next(createError(404, err.message)));
 });

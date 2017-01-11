@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 const request = require('superagent');
 const Promise = require('bluebird');
 const Customer = require('../model/customer.js');
+const Store = require('../model/store.js');
 const CartOrder = require('../model/cart-order.js');
 const CartProduct = require('../model/cart.js');
 
@@ -17,6 +18,12 @@ const sampleCustomer = {
   password: 'Testword',
   email: 'test@test.com',
   address: 'Test address'
+};
+
+const sampleStore = {
+  name: 'Test store',
+  storeNumber: '1234',
+  address: 'Test store address'
 };
 
 const sampleOrder = {
@@ -34,7 +41,8 @@ describe('Cart Product Routes', function() {
     Promise.all([
       Customer.remove({}),
       CartOrder.remove({}),
-      CartProduct.remove({})
+      CartProduct.remove({}),
+      Store.remove({})
     ])
     .then(() => done())
     .catch(done);
@@ -42,11 +50,16 @@ describe('Cart Product Routes', function() {
 
   describe('POST: /api/orders/:cartOrderID/cart', () => {
     before(done => {
-      new Customer(sampleCustomer).save()
+      new Store(sampleStore).save()
+      .then(store => {
+        this.tempStore = store;
+        sampleOrder.storeID = store._id;
+        return new Customer(sampleCustomer).save();
+      })
       .then(customer => {
         this.tempCustomer = customer;
         sampleOrder.customerID = customer._id;
-        return Customer.addCartOrder(customer._id, sampleOrder);
+        return Customer.addCartOrder(customer._id, this.tempStore._id, sampleOrder);
       })
       .then(order => {
         this.tempOrder = order;
