@@ -2,8 +2,8 @@
 
 const expect = require('chai').expect;
 const request = require('superagent');
-const CartOrder = require('../model/cart-order.js');
 const Promise = require('bluebird');
+const CartOrder = require('../model/cart-order.js');
 const Customer = require('../model/customer.js');
 
 require('../server.js');
@@ -16,6 +16,12 @@ const exampleCustomer = {
   email: 'test@test.com',
   address: 'Test address',
   username: 'Test username'
+};
+
+const exampleProduct = {
+  name: 'Test product',
+  desc: 'Test description',
+  quantity: 100
 };
 
 const exampleOrder = {
@@ -32,7 +38,7 @@ describe('Cart Order Routes', function() {
     .catch(done);
   });
 
-  describe('POST: /api/orders/:customerID/cartOrder', () => {
+  describe('POST: /api/orders/:customerID/cart-order', () => {
     before(done => {
       new Customer(exampleCustomer).save()
       .then(customer => {
@@ -46,7 +52,7 @@ describe('Cart Order Routes', function() {
     describe('With a valid customer ID and body', () => {
       it('should return an order', done => {
         request
-        .post(`${url}/api/orders/${this.tempCustomer._id}/cartOrder`)
+        .post(`${url}/api/orders/${this.tempCustomer._id}/cart-order`)
         .send(exampleOrder)
         .end((err, response) => {
           if (err) return done(err);
@@ -83,7 +89,7 @@ describe('Cart Order Routes', function() {
     describe('With a valid ID, but no body', () => {
       it('should return a 400 status', done => {
         request
-        .post(`${url}/api/orders/${this.tempCustomer._id}/cartOrder`)
+        .post(`${url}/api/orders/${this.tempCustomer._id}/cart-order`)
         .send({})
         .end((err, response) => {
           expect(err).to.be.an('error');
@@ -95,6 +101,15 @@ describe('Cart Order Routes', function() {
   });
 
   describe('GET: /api/orders/:orderID', () => {
+    before(done => {
+      CartOrder.addCartProduct(this.tempOrder._id, exampleProduct)
+      .then(product => {
+        this.tempProduct = product;
+        done();
+      })
+      .catch(done);
+    });
+
     describe('With a valid ID', () => {
       it('should return an order', done => {
         request
@@ -102,6 +117,8 @@ describe('Cart Order Routes', function() {
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(200);
+          expect(response.body.products.length).to.equal(1);
+          expect(response.body.products[0].name).to.equal(exampleProduct.name);
           expect(response.body.customerID).to.equal(this.tempOrder.customerID);
           expect(response.body.shippingAddress).to.equal(this.tempOrder.shippingAddress);
           done();
