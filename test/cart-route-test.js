@@ -73,6 +73,19 @@ describe('Cart Product Routes', function() {
         });
       });
     });
+
+    describe('With an invalid ID', () => {
+      it('should return a 404 status', done => {
+        request
+        .post(`${url}/api/orders/69`)
+        .send(sampleProduct)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
   });
 
   describe('GET: /api/products/:productID', () => {
