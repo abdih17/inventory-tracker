@@ -86,6 +86,18 @@ describe('Cart Product Routes', function() {
         });
       });
     });
+
+    describe('With a valid ID, but invalid body', () => {
+      it('should return a 400 status', done => {
+        request
+        .post(`${url}/api/orders/${this.tempOrder._id}/cart`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
   });
 
   describe('GET: /api/products/:productID', () => {
