@@ -53,13 +53,13 @@ const invalidEmployee = {
   admin: true
 };
 
-const updatedEmployeePrivileges = {
-  name: 'Updated Name',
-  username: 'updatedname',
-  email: 'test6@example.com',
-  admin: false,
-  shipping: true
-};
+// const updatedEmployeePrivileges = {
+//   name: 'Updated Name',
+//   username: 'updatedname',
+//   email: 'test6@example.com',
+//   admin: false,
+//   shipping: true
+// };
 
 describe('Employee route', function() {
 
@@ -496,8 +496,7 @@ describe('Employee route', function() {
 
     describe('With a valid ID and admin status', () => {
       it('should return a 204 status', done => {
-        request
-        .delete(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
+        request.delete(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
         .set({
           Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
         })
@@ -511,8 +510,7 @@ describe('Employee route', function() {
 
     describe('With a valid ID, valid auth, NOT admin', () => {
       it('should return a 204 status', done => {
-        request
-        .delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
+        request.delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
         .set({
           Authorization: `Bearer ${this.tempTokenEmployeeAssigned}`
         })
@@ -523,16 +521,18 @@ describe('Employee route', function() {
       });
     });
 
-    // describe('With a valid ID and admin status, but bad auth', () => {
-    //   it('should return a 401 status', done => {
-    //     // TODO: build out this test
-    //   });
-    // });
-    //
-    // describe('With an invalid ID', () => {
-    //   it('should return a 404 status', done => {
-    //     // TODO: build out this test
-    //   });
-    // });
-  });
+  //   describe('With a valid ID and admin status, but bad auth', () => {
+  //     it('should return a 401 status', done => {
+  //       // TODO: build out this test
+  //       request.delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
+  //       .end()
+  //     });
+  //   });
+  //
+  //   describe('With an invalid ID', () => {
+  //     it('should return a 404 status', done => {
+  //       // TODO: build out this test
+  //     });
+  //   });
+  // });
 });
