@@ -69,3 +69,14 @@ employeeRouter.put('/api/employee/:employeeID', bearerAuth, jsonParser, function
   })
   .catch(() => next(createError(404, 'Employee not found.')));
 });
+
+employeeRouter.delete('/api/employee/:employeeID', bearerAuth, jsonParser, function(req, res, next) {
+  debug('DELETE Employee: /api/employee/:employeeID');
+
+  Employee.findByIdAndRemove(req.params.employeeID)
+  .then( employee => {
+    if (employee.admin === false ) return next(createError(403, 'Forbidden'));
+    res.status(204).send('Employee deleted.');
+  })
+  .catch(() => next(createError(404, 'Employee not found')));
+});
