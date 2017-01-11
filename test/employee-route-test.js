@@ -1,11 +1,11 @@
 'use strict';
 
-//Comment to have a new commit to make Travis re-test.
 const expect = require('chai').expect;
 const request = require('superagent');
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
 const Employee = require('../model/employee.js');
+const Store = require('../model/store.js');
 
 mongoose.Promise = Promise;
 
@@ -63,7 +63,11 @@ const invalidEmployee = {
 // };
 
 describe('Employee route', function() {
-
+  after(done => {
+    Store.remove({})
+    .then(() => done())
+    .catch(done);
+  });
   // ************** POST TESTS **************
   describe('POST: /api/employee/register', () => {
     afterEach(done => {
