@@ -2,9 +2,8 @@
 
 const expect = require('chai').expect;
 const request = require('superagent');
-// const mongoose = require('mongoose');
-// const Promise = require('bluebird');
-// Adding a comment to make Travis rebuild for environment variables.
+const Promise = require('bluebird');
+const Store = require('../model/store.js');
 const Customer = require('../model/customer.js');
 
 require('../server.js');
@@ -17,6 +16,12 @@ const exampleCustomer = {
   password: 'Testword',
   email: 'test@test.com',
   address: '12345 nowheresville, test city, test state, 99999'
+};
+
+const sampleStore = {
+  name: 'Test store name',
+  address: 'Test store address',
+  storeNumber: '1234'
 };
 
 const invalidCustomer = {
@@ -42,7 +47,10 @@ const updatedCustomer = {
 describe('Customer route', function() {
   describe('POST: /api/signup', () => {
     afterEach(done => {
-      Customer.remove({})
+      Promise.all([
+        Customer.remove({}),
+        Store.remove({})
+      ])
       .then(() => done())
       .catch(done);
     });
@@ -93,13 +101,17 @@ describe('Customer route', function() {
 
   describe('GET: /api/signin', () => {
     before(done => {
-      let customer = new Customer(exampleCustomer);
+      new Store(sampleStore).save()
+      .then(store => {
+        this.tempStore = store;
+        let customer = new Customer(exampleCustomer);
 
-      customer.hashPassword(customer.password)
+        return customer.hashPassword(customer.password);
+      })
       .then(customer => customer.save())
       .then(customer => {
         this.tempCustomer = customer;
-        return Customer.addCartOrder(customer._id, exampleCartOrder);
+        return Customer.addCartOrder(customer._id, this.tempStore._id, exampleCartOrder);
       })
       .then(order => {
         this.tempOrder = order;

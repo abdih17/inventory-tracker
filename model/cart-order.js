@@ -10,8 +10,7 @@ const cartOrderSchema = Schema({
   shippingAddress: {type: String, required: true},
   shippingName: {type: String, required: true},
   customerID: {type: Schema.Types.ObjectId, required: true},
-  // TODO: Uncomment this line when the store is completed.
-  // storeID: {type: Schema.Types.ObjectId, required: true},
+  storeID: {type: Schema.Types.ObjectId, required: true},
   products: [{type: Schema.Types.ObjectId, ref: 'cartProduct'}]
 });
 
