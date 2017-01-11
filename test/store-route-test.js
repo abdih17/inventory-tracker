@@ -179,6 +179,37 @@ describe('Store Routes', function() {
       });
     });
 
+    describe('with a valid id and invalid body', function() {
+      before( done => {
+        new Store(exampleStore).save()
+        .then( store => {
+          this.tempStore = store;
+          done();
+        })
+        .catch(done);
+      });
+
+      after( done => {
+        if(this.tempStore) {
+          Store.remove({})
+          .then( () => done())
+          .catch(done);
+          return;
+        }
+        done();
+      });
+
+      it('should return a 400', done => {
+
+        request.put(`${url}/api/store/${this.tempStore._id}`)
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          done();
+        });
+      });
+    });
+
     describe('with an invalid id and valid body', function() {
       before( done => {
         new Store(exampleStore).save()
@@ -200,13 +231,11 @@ describe('Store Routes', function() {
       });
 
       it('should return a 404', done => {
-        var updated = { name: 'Upadated Name' };
 
         request.put(`${url}/api/store/111111111111`)
-        .send(updated)
+        .send(badRequestExample)
         .end((err, res) => {
           expect(res.status).to.equal(404);
-          expect(res.body.name).to.not.equal(updated.name);
           done();
         });
       });

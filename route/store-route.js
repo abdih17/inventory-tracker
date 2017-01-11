@@ -31,10 +31,18 @@ storeRouter.get('/api/store/:id', function(req, res, next) {
 storeRouter.put('/api/store/:id', jsonParser, function(req, res, next) {
   debug('PUT: /api/store/:id');
 
+  if(Object.getOwnPropertyNames(req.body).length === 0) {
+    return next(createError(400, 'Bad request'));
+  }
   Store.findByIdAndUpdate(req.params.id, req.body, { new: true })
-  .then( store => res.json(store))
+  .then( store => {
+    if( store === null) return next(createError(404, 'Not Found'));
+    res.json(store);
+  })
   .catch( err => {
-    if(err.name === 'ValidationError') return next(err);
+    if(err.name === 'ValidationError') {
+      return next(err);
+    }
     next(createError(404, err.message));
   });
 });
