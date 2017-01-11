@@ -23,6 +23,7 @@ cartOrderRouter.get('/api/orders/:orderID', function(request, response, next) {
   debug('GET: /api/orders/:orderID');
 
   CartOrder.findById(request.params.orderID)
+  .populate('products')
   .then(order => response.json(order))
   .catch(() => next(createError(404, 'Not found.')));
 });
