@@ -14,6 +14,6 @@ cartRouter.post('/api/orders/:cartOrderID/cart', parseJSON, function(request, re
   if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body supplied.'));
 
   CartOrder.addCartProduct(request.params.cartOrderID, request.body)
-  .then(product => response.json(product))
+  .then(product => response.status(201).json(product))
   .catch(() => next(createError(404, 'Cart order not found.')));
 });
