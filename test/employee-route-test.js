@@ -453,4 +453,86 @@ describe('Employee route', function() {
 
   // ************** DELETE TESTS **************
   // TODO: BUILD OUT DELETE TESTS
+
+  describe('DELETE: /api/employee/:employeeID', () => {
+    before( done => {
+      let employeeAdmin = new Employee(exampleAdminEmployee);
+
+      employeeAdmin.hashPassword(employeeAdmin.password)
+      .then(employeeAdmin => employeeAdmin.save())
+      .then(employeeAdmin => {
+        this.tempEmployeeAdmin = employeeAdmin;
+        return employeeAdmin.generateToken();
+      })
+      .then( tokenEmployeeAdmin => {
+        this.tempTokenEmployeeAdmin = tokenEmployeeAdmin;
+        done();
+      })
+      .catch(done);
+    });
+
+    before( done => {
+      let employeeAssigned = new Employee(exampleEmployeeAssigned);
+
+      employeeAssigned.hashPassword(employeeAssigned.password)
+      .then(employeeAssigned => employeeAssigned.save())
+      .then(employeeAssigned => {
+        this.tempEmployeeAssigned = employeeAssigned;
+        return employeeAssigned.generateToken();
+      })
+      .then( tokenEmployeeAssigned => {
+        this.tempTokenEmployeeAssigned = tokenEmployeeAssigned;
+        done();
+      })
+      .catch(done);
+    });
+
+    after(done => {
+      Employee.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+
+    describe('With a valid ID and admin status', () => {
+      it('should return a 204 status', done => {
+        request
+        .delete(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(204);
+          done();
+        });
+      });
+    });
+
+    describe('With a valid ID, valid auth, NOT admin', () => {
+      it('should return a 204 status', done => {
+        request
+        .delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAssigned}`
+        })
+        .end((err, response) => {
+          expect(response.status).to.equal(403);
+          done();
+        });
+      });
+    });
+
+    // describe('With a valid ID and admin status, but bad auth', () => {
+    //   it('should return a 401 status', done => {
+    //     // TODO: build out this test
+    //   });
+    // });
+    //
+    // describe('With an invalid ID', () => {
+    //   it('should return a 404 status', done => {
+    //     // TODO: build out this test
+    //   });
+    // });
+  });
 });
