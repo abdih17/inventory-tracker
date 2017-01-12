@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "DEBUG='inventory*' mocha && gulp lint",
-    "start": "DEBUG='inventory*' node server.js"
+    "start": "DEBUG='inventory*' node server.js",
+    "test-travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*"
   },
   "repository": {
     "type": "git",
@@ -37,9 +38,11 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "coveralls": "^2.11.15",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",
     "gulp-mocha": "^3.0.1",
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "superagent": "^3.3.1"
   }
