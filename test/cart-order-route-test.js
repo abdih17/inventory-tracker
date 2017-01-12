@@ -8,7 +8,8 @@ const Customer = require('../model/customer.js');
 const Store = require('../model/store.js');
 const InventoryProduct = require('../model/inventory-product.js');
 
-require('../server.js');
+const server = require('../server.js');
+const serverToggle = require('./lib/server-toggle.js');
 
 const url = `http://localhost:${process.env.PORT}`;
 
@@ -43,6 +44,10 @@ const exampleOrder = {
 };
 
 describe('Cart Order Routes', function() {
+  before(done => {
+    serverToggle.startServer(server, done);
+  });
+
   after(done => {
     Promise.all([
       Store.remove({}),
@@ -52,6 +57,10 @@ describe('Cart Order Routes', function() {
     ])
     .then(() => done())
     .catch(done);
+  });
+
+  after(done => {
+    serverToggle.stopServer(server, done);
   });
 
   describe('POST: /api/orders/:customerID/:storeID/cart-order', () => {
