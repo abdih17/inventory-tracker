@@ -166,6 +166,20 @@ describe('Cart Order Routes', function() {
       });
     });
 
+    describe('With no ID', () => {
+      it('should return an array of IDs', done => {
+        request
+        .get(`${url}/api/orders`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an('array');
+          expect(response.body).to.include(this.tempOrder._id);
+          done();
+        });
+      });
+    });
+
     describe('With an invalid ID', () => {
       it('should return a 404 error', done => {
         request
