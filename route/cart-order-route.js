@@ -21,7 +21,10 @@ cartOrderRouter.get('/api/orders', function(request, response, next) {
   debug('GET: /api/orders');
 
   CartOrder.find({})
-  .then(arrayOfOrders => response.json(arrayOfOrders.map(order => order._id)))
+  .then(arrayOfOrders => {
+    if (arrayOfOrders.length === 0) return Promise.reject(createError(416, 'No data found.'));
+    response.json(arrayOfOrders.map(order => order._id));
+  })
   .catch(err => next(err));
 });
 
