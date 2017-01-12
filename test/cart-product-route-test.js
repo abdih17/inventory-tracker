@@ -7,10 +7,17 @@ const Customer = require('../model/customer.js');
 const Store = require('../model/store.js');
 const CartOrder = require('../model/cart-order.js');
 const CartProduct = require('../model/cart-product.js');
+const InventoryProduct = require('../model/inventory-product.js');
 
 require('../server.js');
 
 const url = `http://localhost:${process.env.PORT}`;
+
+const sampleInventoryProduct = {
+  name: 'Test product',
+  desc: 'Test description',
+  quantity: 105
+};
 
 const sampleCustomer = {
   name: 'Test user',
@@ -42,17 +49,19 @@ describe('Cart Product Routes', function() {
       Customer.remove({}),
       CartOrder.remove({}),
       CartProduct.remove({}),
+      InventoryProduct.remove({}),
       Store.remove({})
     ])
     .then(() => done())
     .catch(done);
   });
 
-  describe('POST: /api/orders/:cartOrderID/cart', () => {
+  describe('POST: /api/orders/:cartOrderID/:storeIDcart', () => {
     before(done => {
       new Store(sampleStore).save()
       .then(store => {
         this.tempStore = store;
+        sampleInventoryProduct.storeID = store._id;
         sampleOrder.storeID = store._id;
         return new Customer(sampleCustomer).save();
       })
@@ -64,6 +73,10 @@ describe('Cart Product Routes', function() {
       .then(order => {
         this.tempOrder = order;
         sampleProduct.orderID = order._id;
+        return Store.completeInventoryOrder(this.tempStore._id, sampleInventoryProduct);
+      })
+      .then(invProduct => {
+        this.tempInventoryProduct = invProduct;
         done();
       })
       .catch(done);
@@ -72,17 +85,22 @@ describe('Cart Product Routes', function() {
     describe('With a valid ID and body', () => {
       it('should return a product', done => {
         request
-        .post(`${url}/api/orders/${this.tempOrder._id}/cart`)
+        .post(`${url}/api/orders/${this.tempOrder._id}/${this.tempStore._id}/cart`)
         .send(sampleProduct)
         .end((err, response) => {
           if (err) return done(err);
           this.tempProduct = response.body;
-          expect(response.status).to.equal(201);
-          expect(response.body.name).to.equal(sampleProduct.name);
-          expect(response.body.desc).to.equal(sampleProduct.desc);
-          expect(response.body.quantity).to.equal(sampleProduct.quantity);
-          expect(response.body.cartOrderID).to.equal(this.tempOrder._id.toString());
-          done();
+          InventoryProduct.findById(this.tempInventoryProduct._id)
+          .then(product => {
+            expect(response.status).to.equal(201);
+            expect(response.body.name).to.equal(sampleProduct.name);
+            expect(response.body.desc).to.equal(sampleProduct.desc);
+            expect(product.quantity).to.equal(5);
+            expect(response.body.quantity).to.equal(sampleProduct.quantity);
+            expect(response.body.cartOrderID).to.equal(this.tempOrder._id.toString());
+            done();
+          })
+          .catch(done);
         });
       });
     });
@@ -103,7 +121,7 @@ describe('Cart Product Routes', function() {
     describe('With a valid ID, but invalid body', () => {
       it('should return a 400 status', done => {
         request
-        .post(`${url}/api/orders/${this.tempOrder._id}/cart`)
+        .post(`${url}/api/orders/${this.tempOrder._id}/${this.tempStore._id}/cart`)
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(400);
