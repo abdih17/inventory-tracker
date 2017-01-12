@@ -6,7 +6,7 @@ const createError = require('http-errors');
 const debug = require('debug')('inventory:inventory-route');
 const Store = require('../model/store.js');
 const InventoryOrder = require('../model/inventory-order.js');
-const InventoryProduct = require('../model/inventory.js');
+const InventoryProduct = require('../model/inventory-product.js');
 
 const inventoryRouter = module.exports = new Router();
 

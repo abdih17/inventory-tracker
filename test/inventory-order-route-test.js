@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const request = require('superagent');
 const Promise = require('bluebird');
 const InventoryOrder = require('../model/inventory-order.js');
-const InventoryProduct = require('../model/inventory.js');
+const InventoryProduct = require('../model/inventory-product.js');
 const Store = require('../model/store.js');
 
 require('../server.js');
@@ -95,6 +95,18 @@ describe('Inventory Order Routes', function() {
         });
       });
     });
+
+    describe('with an empty body', () =>  {
+      it('should return a 400 status', done => {
+        request.post(`${url}/api/store/${this.tempStore._id}/inventory`)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.be.empty;
+          done();
+        });
+      });
+    });
   });
 
   describe('GET: /api/inventories/:inventoryOrderID', () => {
@@ -170,6 +182,7 @@ describe('Inventory Order Routes', function() {
         .end((err, res) => {
           expect(err).to.be.an('error');
           expect(res.status).to.equal(400);
+          expect(res.body).to.be.empty;
           done();
         });
       });
