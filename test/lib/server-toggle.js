@@ -14,13 +14,13 @@ exports.startServer = function(server, done) {
     return;
   }
   done();
-}
+};
 
 exports.stopServer = function(server, done) {
   if (server.running) {
     server.close(err => {
       if (err) return done(err);
-      debug(`SERVER CLOSED`);
+      debug('SERVER CLOSED');
       server.running = false;
       done();
     });
