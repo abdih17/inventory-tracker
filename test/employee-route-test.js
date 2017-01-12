@@ -406,6 +406,24 @@ describe('Employee route', function() {
         });
       });
     });
+
+    describe('GET: /api/orders with no ID, but no data', () => {
+      before(done => {
+        Employee.remove({})
+        .then(() => done())
+        .catch(done);
+      });
+
+      it('should return a 416 error', done => {
+        request
+        .get(`${url}/api/employee`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(416);
+          done();
+        });
+      });
+    });
   });
 
   // ************** PUT TESTS **************

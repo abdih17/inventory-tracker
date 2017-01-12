@@ -53,7 +53,10 @@ employeeRouter.get('/api/employee', function(request, response, next) {
   debug('GET: /api/employee');
 
   Employee.find({})
-  .then(arrayOfEmployees => response.json(arrayOfEmployees.map(employee => employee._id)))
+  .then(arrayOfEmployees => {
+    if (arrayOfEmployees.length === 0) return Promise.reject(createError(416, 'Data not found.'));
+    response.json(arrayOfEmployees.map(employee => employee._id));
+  })
   .catch(err => next(err));
 });
 
