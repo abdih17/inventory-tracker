@@ -433,4 +433,22 @@ describe('Inventory Product Routes', function () {
       });
     });
   });
+
+  describe('GET: /api/orders with no ID, but no data', () => {
+    before(done => {
+      InventoryProduct.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    it('should return a 416 error', done => {
+      request
+      .get(`${url}/api/inventory`)
+      .end((err, response) => {
+        expect(err).to.be.an('error');
+        expect(response.status).to.equal(416);
+        done();
+      });
+    });
+  });
 });
