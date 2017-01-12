@@ -9,7 +9,8 @@ const CartOrder = require('../model/cart-order.js');
 const CartProduct = require('../model/cart-product.js');
 const InventoryProduct = require('../model/inventory-product.js');
 
-require('../server.js');
+const server = require('../server.js');
+const serverToggle = require('./lib/server-toggle.js');
 
 const url = `http://localhost:${process.env.PORT}`;
 
@@ -44,6 +45,10 @@ const sampleProduct = {
 };
 
 describe('Cart Product Routes', function() {
+  before(done => {
+    serverToggle.startServer(server, done);
+  });
+
   after(done => {
     Promise.all([
       Customer.remove({}),
@@ -54,6 +59,10 @@ describe('Cart Product Routes', function() {
     ])
     .then(() => done())
     .catch(done);
+  });
+
+  after(done => {
+    serverToggle.stopServer(server, done);
   });
 
   describe('POST: /api/orders/:cartOrderID/:storeIDcart', () => {
