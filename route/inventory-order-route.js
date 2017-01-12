@@ -30,7 +30,10 @@ inventoryOrderRouter.get('/api/inventories', function(request, response, next) {
   debug('GET: /api/inventories');
 
   InventoryOrder.find({})
-  .then(arrayOfOrders => response.json(arrayOfOrders.map(order => order._id)))
+  .then(arrayOfOrders => {
+    if (arrayOfOrders.length === 0) return Promise.reject(createError(416, 'No data found.'));
+    response.json(arrayOfOrders.map(order => order._id));
+  })
   .catch(err => next(err));
 });
 
