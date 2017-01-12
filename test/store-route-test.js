@@ -179,6 +179,39 @@ describe('Store Routes', function() {
     });
   });
 
+  describe('With no ID', () => {
+    before( done => {
+      new Store(exampleStore).save()
+      .then( store => {
+        this.tempStore = store;
+        done();
+      })
+      .catch(done);
+    });
+
+    after( done => {
+      if(this.tempStore) {
+        Store.remove({})
+        .then( () => done())
+        .catch(done);
+        return;
+      }
+      done();
+    });
+
+    it('should return an array of IDs', done => {
+      request
+      .get(`${url}/api/store`)
+      .end((err, response) => {
+        if (err) return done(err);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.be.an('array');
+        expect(response.body).to.include(this.tempStore._id.toString());
+        done();
+      });
+    });
+  });
+
   // PUT -----------------------------------------------------------------------
   describe('PUT: /api/store/:id', function() {
     describe('with a valid id and body', function() {
