@@ -17,6 +17,14 @@ cartOrderRouter.post('/api/orders/:customerID/:storeID/cart-order', parseJSON, f
   .catch(err => next(err));
 });
 
+cartOrderRouter.get('/api/orders', function(request, response, next) {
+  debug('GET: /api/orders');
+
+  CartOrder.find({})
+  .then(arrayOfOrders => response.json(arrayOfOrders.map(order => order._id)))
+  .catch(err => next(err));
+});
+
 cartOrderRouter.get('/api/orders/:orderID', function(request, response, next) {
   debug('GET: /api/orders/:orderID');
 

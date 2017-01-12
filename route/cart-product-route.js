@@ -26,6 +26,14 @@ cartRouter.get('/api/products/:productID', function(request, response, next) {
   .catch(() => next(createError(404, 'Product not found.')));
 });
 
+cartRouter.get('/api/products', function(request, response, next) {
+  debug('GET: /api/products');
+
+  CartProduct.find({})
+  .then(arrayOfProducts => response.json(arrayOfProducts.map(product => product._id)))
+  .catch(err => next(err));
+});
+
 cartRouter.put('/api/products/:productID', parseJSON, function(request, response, next) {
   debug('PUT: /api/products/:productID');
 

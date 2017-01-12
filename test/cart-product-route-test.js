@@ -157,6 +157,20 @@ describe('Cart Product Routes', function() {
       });
     });
 
+    describe('With no ID', () => {
+      it('should return an array of products', done => {
+        request
+        .get(`${url}/api/products`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an('array');
+          expect(response.body).to.include(this.tempProduct._id);
+          done();
+        });
+      });
+    });
+
     describe('With an invalid ID', () => {
       it('should return a 404 error', done => {
         request
