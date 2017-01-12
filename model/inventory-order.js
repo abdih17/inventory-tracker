@@ -12,6 +12,11 @@ const inventoryOrderSchema = Schema({
   test: {type: String }
 });
 
+inventoryOrderSchema.pre('remove', function(next) {
+  InventoryProduct.remove({inventoryOrderID: this._id}).exec();
+  next();
+});
+
 const InventoryOrder = module.exports = mongoose.model('inventoryOrder', inventoryOrderSchema);
 
 InventoryOrder.addInventoryProduct = function(id, product) {

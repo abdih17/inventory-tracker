@@ -15,6 +15,11 @@ const cartOrderSchema = Schema({
   products: [{type: Schema.Types.ObjectId, ref: 'cartProduct'}]
 });
 
+cartOrderSchema.pre('remove', function(next) {
+  CartProduct.remove({cartOrderID: this._id}).exec();
+  next();
+});
+
 const CartOrder = module.exports = mongoose.model('cartOrder', cartOrderSchema);
 
 CartOrder.addCartProduct = function(cartOrderID, storeID, product) {

@@ -66,7 +66,8 @@ storeRouter.put('/api/store/:id', jsonParser, function(req, res, next) {
 storeRouter.delete('/api/store/:id', function(req, res, next) {
   debug('DELETE: /api/store/:id');
 
-  Store.findByIdAndRemove(req.params.id)
+  Store.findOne({_id: req.params.id})
+  .then(store => store.remove())
   .then( () => res.status(204).send())
   .catch( err => next(createError(404, err.message)));
 });
