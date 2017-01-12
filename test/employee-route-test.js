@@ -9,7 +9,8 @@ const Store = require('../model/store.js');
 
 mongoose.Promise = Promise;
 
-require('../server.js');
+const server = require('../server.js');
+const serverToggle = require('./lib/server-toggle.js');
 
 const url = `http://localhost:${process.env.PORT}`;
 
@@ -68,10 +69,18 @@ const updatedEmployeePrivileges = {
 };
 
 describe('Employee route', function() {
+  before(done => {
+    serverToggle.startServer(server, done);
+  });
+
   after(done => {
     Store.remove({})
     .then(() => done())
     .catch(done);
+  });
+
+  after(done => {
+    serverToggle.stopServer(server, done);
   });
 
   // ************** POST TESTS **************
