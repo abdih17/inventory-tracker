@@ -254,7 +254,7 @@ describe('Cart Product Routes', function() {
     });
   });
 
-  describe('GET: /api/orders with no ID, but no data', () => {
+  describe('GET: /api/products with no ID, but no data', () => {
     before(done => {
       CartProduct.remove({})
       .then(() => done())

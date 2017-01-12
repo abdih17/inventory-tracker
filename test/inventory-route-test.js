@@ -434,7 +434,7 @@ describe('Inventory Product Routes', function () {
     });
   });
 
-  describe('GET: /api/orders with no ID, but no data', () => {
+  describe('GET: /api/inventory with no ID, but no data', () => {
     before(done => {
       InventoryProduct.remove({})
       .then(() => done())

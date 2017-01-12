@@ -240,7 +240,7 @@ describe('Inventory Order Routes', function() {
     });
   });
 
-  describe('GET: /api/orders with no ID, but no data', () => {
+  describe('GET: /api/inventories with no ID, but no data', () => {
     before(done => {
       InventoryOrder.remove({})
       .then(() => done())

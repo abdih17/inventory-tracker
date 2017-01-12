@@ -379,4 +379,22 @@ describe('Store Routes', function() {
       });
     });
   });
+
+  describe('GET: /api/store with no ID, but no data', () => {
+    before(done => {
+      Store.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    it('should return a 416 error', done => {
+      request
+      .get(`${url}/api/store`)
+      .end((err, response) => {
+        expect(err).to.be.an('error');
+        expect(response.status).to.equal(416);
+        done();
+      });
+    });
+  });
 });

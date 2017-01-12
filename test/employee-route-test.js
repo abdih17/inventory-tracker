@@ -407,7 +407,7 @@ describe('Employee route', function() {
       });
     });
 
-    describe('GET: /api/orders with no ID, but no data', () => {
+    describe('GET: /api/employee with no ID, but no data', () => {
       before(done => {
         Employee.remove({})
         .then(() => done())
