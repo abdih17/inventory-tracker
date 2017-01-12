@@ -7,7 +7,6 @@ const Promise = require('bluebird');
 const InventoryOrder = require('./inventory-order.js');
 const InventoryProduct = require('./inventory-product.js');
 const Schema = mongoose.Schema;
-const Employee = require('../model/employee.js');
 
 const storeSchema = Schema({
   name: {
@@ -60,20 +59,18 @@ Store.findByIdAndAddEmployee = function(id, employee) {
   debug('findByIdAndAddEmployee');
 
   return Store.findById(id)
-  .catch( err => Promise.reject(createError(404, err.message)))
-  .then( store => {
-    employee.storeID = store._id;
+  .then(store => {
     this.tempStore = store;
-    return new Employee(employee).save();
+    employee.storeID = store._id;
+    return employee.save();
   })
-  .then( employee => {
+  .then(employee => {
     this.tempStore.employees.push(employee._id);
     this.tempEmployee = employee;
     return this.tempStore.save();
   })
-  .then( () => {
-    return this.tempEmployee;
-  });
+  .then(() => Promise.resolve(this.tempEmployee))
+  .catch(() => Promise.reject(createError(400, 'Bad request.')));
 };
 
 

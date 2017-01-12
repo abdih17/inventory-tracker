@@ -15,7 +15,7 @@ const employeeSchema = Schema({
   username: { type: String, unique: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  // storeID: { TODO: reference to store, build out later },
+  storeID: {type: Schema.Types.ObjectId, required: true},
   admin: { type: Boolean, required: true },
   shipping: { type: Boolean, default: false },
   receiving: { type: Boolean, default: false }
