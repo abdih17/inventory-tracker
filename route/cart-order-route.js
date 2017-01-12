@@ -16,7 +16,7 @@ cartOrderRouter.post('/api/orders/:customerID/:storeID/cart-order', parseJSON, f
 
   Customer.addCartOrder(request.params.customerID, request.params.storeID, request.body)
   .then(order => response.status(201).json(order))
-  .catch(err => next(createError(404, err.message)));
+  .catch(err => next(err));
 });
 
 cartOrderRouter.get('/api/orders/:orderID', function(request, response, next) {

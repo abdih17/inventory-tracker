@@ -6,10 +6,17 @@ const Promise = require('bluebird');
 const CartOrder = require('../model/cart-order.js');
 const Customer = require('../model/customer.js');
 const Store = require('../model/store.js');
+const InventoryProduct = require('../model/inventory.js');
 
 require('../server.js');
 
 const url = `http://localhost:${process.env.PORT}`;
+
+const sampleInventoryProduct = {
+  name: 'Test product',
+  desc: 'Test description',
+  quantity: 105
+};
 
 const exampleCustomer = {
   name: 'Test user',
@@ -40,7 +47,8 @@ describe('Cart Order Routes', function() {
     Promise.all([
       Store.remove({}),
       Customer.remove({}),
-      CartOrder.remove({})
+      CartOrder.remove({}),
+      InventoryProduct.remove({})
     ])
     .then(() => done())
     .catch(done);
@@ -122,7 +130,8 @@ describe('Cart Order Routes', function() {
 
   describe('GET: /api/orders/:orderID', () => {
     before(done => {
-      CartOrder.addCartProduct(this.tempOrder._id, exampleProduct)
+      Store.completeInventoryOrder(this.tempStore._id, sampleInventoryProduct)
+      .then(() => CartOrder.addCartProduct(this.tempOrder._id, this.tempStore._id, exampleProduct))
       .then(product => {
         this.tempProduct = product;
         done();
