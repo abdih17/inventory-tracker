@@ -54,13 +54,12 @@ const invalidEmployee = {
   admin: true
 };
 
-// const updatedEmployeePrivileges = {
-//   name: 'Updated Name',
-//   username: 'updatedname',
-//   email: 'test6@example.com',
-//   admin: false,
-//   shipping: true
-// };
+const updatedEmployeePrivileges = {
+  name: 'Updated Name',
+  username: 'updatedname',
+  email: 'test6@example.com',
+  shipping: true
+};
 
 describe('Employee route', function() {
   after(done => {
@@ -68,6 +67,7 @@ describe('Employee route', function() {
     .then(() => done())
     .catch(done);
   });
+
   // ************** POST TESTS **************
   describe('POST: /api/employee/register', () => {
     afterEach(done => {
@@ -86,7 +86,6 @@ describe('Employee route', function() {
           expect(response.text).to.be.a('string');
           expect(response.body).to.be.an('object');
           expect(response.body).to.be.empty;
-          // console.log('***THIS IS THE RESPONSE BODY***', response.body);
           done();
         });
       });
@@ -320,8 +319,7 @@ describe('Employee route', function() {
   });
 
   // ************** PUT TESTS **************
-  // TODO: BUILD OUT PUT TESTS
-  describe('PUT: /api/employee/:employeeID', () => {
+  describe('PUT to admin ID (valid request, valid auth)', () => {
     before( done => {
       let employeeAdmin = new Employee(exampleAdminEmployee);
 
@@ -338,58 +336,96 @@ describe('Employee route', function() {
       .catch(done);
     });
 
-    // before( done => {
-    //   let employeeUnassigned = new Employee(exampleEmployeeUnassigned);
-    //
-    //   employeeUnassigned.hashPassword(employeeUnassigned.password)
-    //   .then(employeeUnassigned => employeeUnassigned.save())
-    //   .then(employeeUnassigned => {
-    //     this.tempEmployeeUnassigned = employeeUnassigned;
-    //     done();
-    //   })
-    //   .catch(done);
-    // });
-    //
-    // before( done => {
-    //   let employeeAssigned = new Employee(exampleEmployeeAssigned);
-    //
-    //   employeeAssigned.hashPassword(employeeAssigned.password)
-    //   .then(employeeAssigned => employeeAssigned.save())
-    //   .then(employeeAssigned => {
-    //     this.tempEmployeeAssigned = employeeAssigned;
-    //     done();
-    //   })
-    //   .catch(done);
-    // });
-    //
-    // before( done => {
-    //   let employeeDefaultUsername = new Employee(exampleEmployeeDefaultUsername);
-    //
-    //   employeeDefaultUsername.hashPassword(employeeDefaultUsername.password)
-    //   .then(employeeDefaultUsername => employeeDefaultUsername.save())
-    //   .then(employeeDefaultUsername => {
-    //     this.tempEmployeeDefaultUsername = employeeDefaultUsername;
-    //     done();
-    //   })
-    //   .catch(done);
-    // });
-
-    after(done => {
+    after( done => {
       Employee.remove({})
       .then(() => done())
       .catch(done);
     });
 
-    describe('**************With a valid ID and body (admin employee)', () => {
+    it('should return a 200 status', done => {
+      request.put(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
+      .set({
+        Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+      })
+      .send({ username: 'updatedname1', email: 'test55@example.com' })
+      .end((err, response) => {
+        if (err) return done(err);
+        expect(response.status).to.equal(200);
+        expect(response.text).to.equal('Update successful');
+        done();
+      });
+    });
+  });
+
+  describe('PUT to NON-admin ID (Attempt by non-admin to make self admin)', () => {
+    before( done => {
+      let employeeAssigned = new Employee(exampleEmployeeAssigned);
+
+      employeeAssigned.hashPassword(employeeAssigned.password)
+      .then(employeeAssigned => employeeAssigned.save())
+      .then(employeeAssigned => {
+        this.tempEmployeeAssigned = employeeAssigned;
+        return employeeAssigned.generateToken();
+      })
+      .then( tokenEmployeeAssigned => {
+        this.tempTokenEmployeeAssigned = tokenEmployeeAssigned;
+        done();
+      })
+      .catch(done);
+    });
+
+    after( done => {
+      Employee.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    it('should return a 403 \'forbidden\' error', done => {
+      request.put(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
+      .set({
+        Authorization: `Bearer ${this.tempTokenEmployeeAssigned}`
+      })
+      .send({ username: 'updatedname1', email: 'test55@example.com', admin: true })
+      .end((err, response) => {
+        expect(err).to.be.an('error');
+        expect(response.status).to.equal(403);
+        done();
+      });
+    });
+  });
+
+  describe('PUT: /api/employee/:employeeID (other misc. cases)', () => {
+    after( done => {
+      Employee.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('With a valid ID and body (NON-admin employee)', () => {
+      before( done => {
+        let employeeDefaultUsername = new Employee(exampleEmployeeDefaultUsername);
+
+        employeeDefaultUsername.hashPassword(employeeDefaultUsername.password)
+        .then(employeeDefaultUsername => employeeDefaultUsername.save())
+        .then(employeeDefaultUsername => {
+          this.tempEmployeeDefaultUsername = employeeDefaultUsername;
+          return employeeDefaultUsername.generateToken();
+        })
+        .then( tokenEmployeeDefaultUsername => {
+          this.tempTokenEmployeeDefaultUsername = tokenEmployeeDefaultUsername;
+          done();
+        })
+        .catch(done);
+      });
+
       it('should return a 200 status', done => {
-        request.put(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
+        request.put(`${url}/api/employee/${this.tempEmployeeDefaultUsername._id}`)
         .set({
-          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+          Authorization: `Bearer ${this.tempTokenEmployeeDefaultUsername}`
         })
         .send({ username: 'updatedname1', email: 'test55@example.com' })
         .end((err, response) => {
           if (err) return done(err);
-          console.log(this.tempTokenEmployeeAdmin);
           expect(response.status).to.equal(200);
           expect(response.text).to.equal('Update successful');
           done();
@@ -397,12 +433,59 @@ describe('Employee route', function() {
       });
     });
 
+    describe('With a valid ID and forbidden request in body (NON-admin employee)', () => {
+      before( done => {
+        let employeeAssigned = new Employee(exampleEmployeeAssigned);
+
+        employeeAssigned.hashPassword(employeeAssigned.password)
+        .then(employeeAssigned => employeeAssigned.save())
+        .then(employeeAssigned => {
+          this.tempEmployeeAssigned = employeeAssigned;
+          return employeeAssigned.generateToken();
+        })
+        .then( tokenEmployeeAssigned => {
+          this.tempTokenEmployeeAssigned = tokenEmployeeAssigned;
+          done();
+        })
+        .catch(done);
+      });
+
+      it('should return a 403 \'forbidden\' error', done => {
+        request.put(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAssigned}`
+        })
+        .send(updatedEmployeePrivileges)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(403);
+          done();
+        });
+      });
+    });
+
     describe('With an invalid ID but valid body', () => {
-      it('should return a 404 status', done => {
+      before( done => {
+        let employeeUnassigned = new Employee(exampleEmployeeUnassigned);
+
+        employeeUnassigned.hashPassword(employeeUnassigned.password)
+        .then(employeeUnassigned => employeeUnassigned.save())
+        .then(employeeUnassigned => {
+          this.tempEmployeeUnassigned = employeeUnassigned;
+          return employeeUnassigned.generateToken();
+        })
+        .then( tokenEmployeeUnassigned => {
+          this.tempTokenEmployeeUnassigned = tokenEmployeeUnassigned;
+          done();
+        })
+        .catch(done);
+      });
+
+      it('should return a 404 \'not found\' error', done => {
         request.put(`${url}/api/employee/69538438567u238472`)
         .send({ username: 'updatedinv1', email: 'test55@example.com' })
         .set({
-          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+          Authorization: `Bearer ${this.tempTokenEmployeeUnassigned}`
         })
         .end((err, response) => {
           expect(err).to.be.an('error');
@@ -413,7 +496,7 @@ describe('Employee route', function() {
     });
 
     describe('With a valid ID, but invalid auth', () => {
-      it('should return a 401 status', done => {
+      it('should return a 401 \'unauthorized\' error', done => {
         request.put(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
         .send({ username: 'updatedinv2', email: 'test55@example.com' })
         .end((err, response) => {
@@ -425,11 +508,11 @@ describe('Employee route', function() {
     });
 
     describe('With a valid ID, valid auth, but no body', () => {
-      it('should return a 400 status', done => {
+      it('should return a 400 \'bad request\' error', done => {
         request.put(`${url}/api/employee/${this.tempEmployeeAdmin._id}`)
         .send('')
         .set({
-          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+          Authorization: `Bearer ${this.tempTokenEmployeeDefaultUsername}`
         })
         .end((err, response) => {
           expect(err).to.be.an('error');
@@ -440,25 +523,7 @@ describe('Employee route', function() {
     });
   });
 
-  // describe('With a valid ID and body (admin employee)', next)
-  // username: 'testusername1',
-  // password: 'TestPW123',
-  //
-  // describe('With a valid ID and body (new employee, role unassigned)', next)
-  // username: 'testusername2',
-  // password: 'TestPW321',
-  //
-  // describe('With a valid ID and body (non-admin, assigned employee)', next)
-  // username: 'testusername3',
-  // password: 'TestPW456',
-  //
-  // describe('With a valid ID and body (employee with default username, equal to email)', next)
-  // username: 'test4@example.com',
-  // password: 'TestPW789',
-
   // ************** DELETE TESTS **************
-  // TODO: BUILD OUT DELETE TESTS
-
   describe('DELETE: /api/employee/:employeeID', () => {
     before( done => {
       let employeeAdmin = new Employee(exampleAdminEmployee);
@@ -498,6 +563,28 @@ describe('Employee route', function() {
       .catch(done);
     });
 
+    before( done => {
+      let employeeUnassigned = new Employee(exampleEmployeeUnassigned);
+
+      employeeUnassigned.hashPassword(employeeUnassigned.password)
+      .then(employeeUnassigned => employeeUnassigned.save())
+      .then(employeeUnassigned => {
+        this.tempEmployeeUnassigned = employeeUnassigned;
+        return employeeUnassigned.generateToken();
+      })
+      .then( tokenEmployeeUnassigned => {
+        this.tempTokenEmployeeUnassigned = tokenEmployeeUnassigned;
+        done();
+      })
+      .catch(done);
+    });
+
+    after(done => {
+      Employee.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
 
     describe('With a valid ID and admin status', () => {
       it('should return a 204 status', done => {
@@ -514,7 +601,7 @@ describe('Employee route', function() {
     });
 
     describe('With a valid ID, valid auth, NOT admin', () => {
-      it('should return a 204 status', done => {
+      it('should return a 403 \'forbidden\' error', done => {
         request.delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
         .set({
           Authorization: `Bearer ${this.tempTokenEmployeeAssigned}`
@@ -526,18 +613,27 @@ describe('Employee route', function() {
       });
     });
 
-    // describe('With a valid ID and admin status, but bad auth', () => {
-    //   it('should return a 401 status', done => {
-    //     // TODO: build out this test
-    //     request.delete(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
-    //     .end()
-    //   });
-    // });
-    //
-    // describe('With an invalid ID', () => {
-    //   it('should return a 404 status', done => {
-    //     // TODO: build out this test
-    //   });
-    // });
+    describe('With a valid ID and admin status, but bad auth', () => {
+      it('should return a 401 \'unauthorized\' error', done => {
+        request.delete(`${url}/api/employee/${this.tempEmployeeUnassigned._id}`)
+        .end((err, response) => {
+          expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid ID', () => {
+      it('should return a 404 \'not found\' error', done => {
+        request.delete(`${url}/api/employee/98374ru9248ur293ur92r3`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeUnassigned}`
+        })
+        .end((err, response) => {
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
   });
 });
