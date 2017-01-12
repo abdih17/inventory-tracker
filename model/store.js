@@ -6,6 +6,8 @@ const createError = require('http-errors');
 const Promise = require('bluebird');
 const InventoryOrder = require('./inventory-order.js');
 const InventoryProduct = require('./inventory-product.js');
+const CartOrder = require('./cart-order.js');
+const Employee = require('./employee.js');
 const Schema = mongoose.Schema;
 
 const storeSchema = Schema({
@@ -52,6 +54,25 @@ const storeSchema = Schema({
   ]
 });
 
+storeSchema.pre('remove', function(next) {
+  CartOrder.remove({storeID: this._id}).exec();
+  next();
+});
+
+storeSchema.pre('remove', function(next) {
+  Employee.remove({storeID: this._id}).exec();
+  next();
+});
+
+storeSchema.pre('remove', function(next) {
+  InventoryOrder.remove({storeID: this._id}).exec();
+  next();
+});
+
+storeSchema.pre('remove', function(next) {
+  InventoryProduct.remove({storeID: this._id}).exec();
+  next();
+});
 
 const Store = module.exports = mongoose.model('store', storeSchema);
 
