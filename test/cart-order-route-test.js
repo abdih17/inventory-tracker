@@ -112,8 +112,10 @@ describe('Cart Order Routes', function() {
         .post(`${url}/api/orders/${this.tempCustomer._id}/${this.tempStore._id}/cart-order`)
         .send({})
         .end((err, response) => {
-          expect(err).to.be.an('error');
-          expect(response.status).to.equal(400);
+          if(err) return done(err);
+          expect(response.status).to.equal(201);
+          expect(response.body.storeID).to.equal(this.tempStore._id.toString());
+          expect(response.body.customerID).to.equal(this.tempCustomer._id.toString());
           done();
         });
       });

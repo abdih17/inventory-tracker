@@ -12,8 +12,6 @@ const cartOrderRouter = module.exports = Router();
 cartOrderRouter.post('/api/orders/:customerID/:storeID/cart-order', parseJSON, function(request, response, next) {
   debug('POST: /api/orders/:customerID/:storeID/cartOrder');
 
-  if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body posted.'));
-
   Customer.addCartOrder(request.params.customerID, request.params.storeID, request.body)
   .then(order => response.status(201).json(order))
   .catch(err => next(createError(404, err.message)));
