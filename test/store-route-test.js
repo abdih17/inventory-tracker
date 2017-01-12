@@ -6,7 +6,8 @@ const Store = require('../model/store.js');
 const Customer = require('../model/customer.js');
 const CartOrder = require('../model/cart-order.js');
 
-require('../server.js');
+const server = require('../server.js');
+const serverToggle = require('./lib/server-toggle.js');
 
 const url = `http://localhost:${process.env.PORT}`;
 
@@ -37,6 +38,13 @@ const badRequestExample = {
 };
 
 describe('Store Routes', function() {
+  before(done => {
+    serverToggle.startServer(server, done);
+  });
+
+  after(done => {
+    serverToggle.stopServer(server, done);
+  });
 
   // POST --------------------------------------------------------
   describe('POST: /api/store', function() {

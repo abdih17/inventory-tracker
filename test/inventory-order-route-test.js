@@ -7,7 +7,8 @@ const InventoryOrder = require('../model/inventory-order.js');
 const InventoryProduct = require('../model/inventory-product.js');
 const Store = require('../model/store.js');
 
-require('../server.js');
+const server = require('../server.js');
+const serverToggle = require('./lib/server-toggle.js');
 
 const url = `http://localhost:${process.env.PORT}`;
 
@@ -28,6 +29,10 @@ const exampleInventoryOrder = {
 };
 
 describe('Inventory Order Routes', function() {
+  before(done => {
+    serverToggle.startServer(server, done);
+  });
+
   after(done => {
     Promise.all([
       Store.remove({}),
@@ -36,6 +41,10 @@ describe('Inventory Order Routes', function() {
     ])
     .then(() => done())
     .catch(done);
+  });
+
+  after(done => {
+    serverToggle.stopServer(server, done);
   });
 
   describe('POST: /api/inventories/:storeID/inventory-order', () => {
