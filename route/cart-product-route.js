@@ -30,7 +30,10 @@ cartRouter.get('/api/products', function(request, response, next) {
   debug('GET: /api/products');
 
   CartProduct.find({})
-  .then(arrayOfProducts => response.json(arrayOfProducts.map(product => product._id)))
+  .then(arrayOfProducts => {
+    if(arrayOfProducts.length == 0) return Promise.reject(createError(416, 'Data not found.'));
+    response.json(arrayOfProducts.map(product => product._id));
+  })
   .catch(err => next(err));
 });
 
