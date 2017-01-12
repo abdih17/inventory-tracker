@@ -209,6 +209,85 @@ describe('Customer route', function() {
         });
       });
     });
+
+    describe('With an invalid username', () => {
+      it('should return a 401 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .set({
+          Authorization: 'Hello '
+        })
+        .auth('', 'Testword')
+        .end((err) => {
+          console.log('***********', err);
+          expect(err).to.be.an('error');
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid username', () => {
+      it('should return a 401 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .end((err) => {
+          expect(err).to.be.an('error');
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid username', () => {
+      it('should return a 401 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .auth('', 'Testword')
+        .end((err) => {
+          console.log('***********', err);
+          expect(err).to.be.an('error');
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid password', () => {
+      it('should return a 401 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .set({
+          Authorization: 'Hello '
+        })
+        .auth('Tes username', '')
+        .end((err) => {
+          console.log('***********', err);
+          expect(err).to.be.an('error');
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid password', () => {
+      it('should return a 401 status', done => {
+        request
+        .get(`${url}/api/signin`)
+        .auth('', '')
+        .end((err) => {
+          console.log('***********', err);
+          expect(err).to.be.an('error');
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
   });
 
   describe('PUT: /api/customer/:customerID', () => {
