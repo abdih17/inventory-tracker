@@ -20,13 +20,11 @@ employeeRouter.post('/api/employee/register', jsonParser, function(req, res, nex
   delete req.body.password;
 
   let employee = new Employee(req.body);
-  console.log('***THIS IS THE EMPLOYEE***',employee);
 
   employee.hashPassword(password)
   .then( employee => employee.save())
   .then( employee => employee.generateToken())
   .then( token => {
-    console.log('***THIS IS THE TOKEN***', token);
     res.status(201).send(token);
   })
   .catch(next);
@@ -55,8 +53,17 @@ employeeRouter.put('/api/employee/:employeeID', bearerAuth, jsonParser, function
 
   if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body included.'));
 
-  Employee.findByIdAndUpdate(req.params.employeeID, req.body, {new: true})
-  .then(employee => {
+  Employee.findById(req.params.employeeID)
+  .then( employee => {
+    // do not allow a non-admin employee to update privileges
+    if (employee.admin === false) {
+      if (req.body.admin || req.body.receiving || req.body.shipping) {
+        return next(createError(403, 'Forbidden'));
+      }
+    }
+    employee.update(req.body);
+
+    // re-hash password if employee is changing password
     if (req.body.password) {
       let password = req.body.password;
       delete req.body.password;
