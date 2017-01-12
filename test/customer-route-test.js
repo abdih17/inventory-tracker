@@ -244,9 +244,12 @@ describe('Customer route', function() {
     });
 
     describe('With a valid ID, but invalid auth', () => {
-      it('should return a 401 status', done => {
+      it.only('should return a 401 status', done => {
         request
         .put(`${url}/api/customer/${this.tempCustomer._id}`)
+        .set({
+          Authorization: 'false'
+        })
         .send(updatedCustomer)
         .end((err, response) => {
           expect(err).to.be.an('error');
