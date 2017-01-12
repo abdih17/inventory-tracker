@@ -36,6 +36,8 @@ app.use(cartProductRouter);
 app.use(storeRouter);
 app.use(errors);
 
-app.listen(PORT, () => {
+const server = module.exports = app.listen(PORT, () => {
   debug('server up:', PORT);
 });
+
+server.running = true;
