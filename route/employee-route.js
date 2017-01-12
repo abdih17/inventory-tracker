@@ -49,6 +49,17 @@ employeeRouter.get('/api/employee/signin', basicAuth, function(req, res, next) {
   .catch(() => next(createError(401, 'Invalid login')));
 });
 
+employeeRouter.get('/api/employee', function(request, response, next) {
+  debug('GET: /api/employee');
+
+  Employee.find({})
+  .then(arrayOfEmployees => {
+    if (arrayOfEmployees.length === 0) return Promise.reject(createError(416, 'Data not found.'));
+    response.json(arrayOfEmployees.map(employee => employee._id));
+  })
+  .catch(err => next(err));
+});
+
 employeeRouter.put('/api/employee/:employeeID', bearerAuth, jsonParser, function(req, res, next) {
   debug('PUT Employee: /api/employee/:employeeID');
 

@@ -46,6 +46,18 @@ inventoryRouter.get('/api/inventory/:inventoryID', function(req, res, next) {
   .catch( () => next(createError(404, 'Inventory not found')));
 });
 
+inventoryRouter.get('/api/inventory', function(request, response, next) {
+  debug('GET: /api/products');
+
+  InventoryProduct.find({})
+  .then(arrayOfProducts => {
+    if(arrayOfProducts.length == 0) return Promise.reject(createError(416, 'Data not found.'));
+    response.json(arrayOfProducts.map(product => product._id));
+  })
+  .catch(err => next(err));
+});
+
+
 inventoryRouter.put('/api/inventory/:inventoryID', jsonParser, function(req, res, next) {
   debug('PUT: /api/inventory/:inventoryID');
 

@@ -262,4 +262,22 @@ describe('Cart Order Routes', function() {
       });
     });
   });
+
+  describe('GET: /api/orders with no ID, but no data', () => {
+    before(done => {
+      CartOrder.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    it('should return a 416 error', done => {
+      request
+      .get(`${url}/api/orders`)
+      .end((err, response) => {
+        expect(err).to.be.an('error');
+        expect(response.status).to.equal(416);
+        done();
+      });
+    });
+  });
 });

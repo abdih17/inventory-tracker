@@ -30,6 +30,18 @@ storeRouter.get('/api/store/:id', function(req, res, next) {
   .catch( err => next(createError(404, err.message)));
 });
 
+// GET A LIST OF ALL STORES ---------------
+storeRouter.get('/api/store', function(request, response, next) {
+  debug('GET: /api/store');
+
+  Store.find({})
+  .then(arrayOfStores => {
+    if (arrayOfStores.length === 0) return Promise.reject(createError(416, 'Data not found.'));
+    response.json(arrayOfStores.map(store => store._id));
+  })
+  .catch(err => next(err));
+});
+
 // UPDATE STORE INFO BY ID ---------------
 storeRouter.put('/api/store/:id', jsonParser, function(req, res, next) {
   debug('PUT: /api/store/:id');

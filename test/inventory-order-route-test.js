@@ -143,6 +143,21 @@ describe('Inventory Order Routes', function() {
       });
     });
 
+    describe('With no ID', () => {
+      it('should return an array of orders', done => {
+        request
+        .get(`${url}/api/inventories`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an('array');
+          expect(response.body).to.include(this.tempInventoryOrder._id);
+          done();
+        });
+      });
+    });
+
+
     describe('with an invalid ID', () => {
       it('should return a 404 error', done => {
         request
@@ -221,6 +236,24 @@ describe('Inventory Order Routes', function() {
           expect(res.status).to.equal(404);
           done();
         });
+      });
+    });
+  });
+
+  describe('GET: /api/inventories with no ID, but no data', () => {
+    before(done => {
+      InventoryOrder.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
+    it('should return a 416 error', done => {
+      request
+      .get(`${url}/api/inventories`)
+      .end((err, response) => {
+        expect(err).to.be.an('error');
+        expect(response.status).to.equal(416);
+        done();
       });
     });
   });

@@ -28,6 +28,14 @@ const exampleAdminEmployee = {
   admin: true
 };
 
+const exampleAdminEmployeeB = {
+  name: 'Test Admin NameB',
+  username: 'testusername1B',
+  password: 'TestPW123B',
+  email: 'test1@example.comB',
+  admin: true
+};
+
 const exampleEmployeeUnassigned = {
   name: 'Test New Employee Name',
   username: 'testusername2',
@@ -88,6 +96,7 @@ describe('Employee route', function() {
     beforeEach(done => {
       new Store(sampleStore).save()
       .then(store => {
+        exampleAdminEmployeeB.storeID = store._id;
         exampleAdminEmployee.storeID = store._id;
         exampleEmployeeUnassigned.storeID = store._id;
         exampleEmployeeAssigned.storeID = store._id;
@@ -361,6 +370,56 @@ describe('Employee route', function() {
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(401);
+          done();
+        });
+      });
+    });
+
+    describe('With no ID', () => {
+      before( done => {
+        let employeeAdminB = new Employee(exampleAdminEmployeeB);
+
+        employeeAdminB.hashPassword(employeeAdminB.password)
+        .then(employeeAdmin => employeeAdmin.save())
+        .then(employeeAdmin => {
+          this.tempEmployeeAdminB = employeeAdmin;
+          done();
+        })
+        .catch(done);
+      });
+
+      after( done => {
+        Employee.findByIdAndRemove(this.tempEmployeeAdminB._id)
+        .then(() => done())
+        .catch(done);
+      });
+
+      it('should return an array of employees', done => {
+        request
+        .get(`${url}/api/employee`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an('array');
+          expect(response.body.length).to.be.at.least(1);
+          done();
+        });
+      });
+    });
+
+    describe('GET: /api/employee with no ID, but no data', () => {
+      before(done => {
+        Employee.remove({})
+        .then(() => done())
+        .catch(done);
+      });
+
+      it('should return a 416 error', done => {
+        request
+        .get(`${url}/api/employee`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(416);
           done();
         });
       });
