@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const CartProduct = require('./cart.js');
 const createError = require('http-errors');
 const debug = require('debug')('inventory:cart order');
+const InventoryProduct = require('./inventory.js');
 const Schema = mongoose.Schema;
 
 const cartOrderSchema = Schema({
@@ -16,10 +17,22 @@ const cartOrderSchema = Schema({
 
 const CartOrder = module.exports = mongoose.model('cartOrder', cartOrderSchema);
 
-CartOrder.addCartProduct = function(id, product) {
+CartOrder.addCartProduct = function(cartOrderID, storeID, product) {
   debug('addCartProduct');
 
-  return CartOrder.findById(id)
+  return InventoryProduct.findOne({
+    name: product.name,
+    desc: product.desc,
+    storeID: storeID
+  })
+  .then(invProduct => {
+    if (invProduct.quantity < product.quantity) return Promise.reject(createError(400, 'Store does not have that much inventory'));
+    if (invProduct.quantity === 0) return Promise.reject(createError(400, 'Store is out of that product'));
+    
+    invProduct.quantity -= product.quantity;
+    return invProduct.save();
+  })
+  .then(() => CartOrder.findById(cartOrderID))
   .then(order => {
     product.cartOrderID = order._id;
     this.tempOrder = order;
