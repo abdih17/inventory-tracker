@@ -4,6 +4,7 @@ const Router = require('express').Router;
 const jsonParser = require('body-parser').json();
 const createError = require('http-errors');
 const basicAuth = require('../lib/basic-auth-middleware.js');
+const Store = require('../model/store.js');
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const debug = require('debug')('inventory:employeeRouter');
 
@@ -11,8 +12,8 @@ const Employee = require('../model/employee.js');
 
 const employeeRouter = module.exports = Router();
 
-employeeRouter.post('/api/employee/register', jsonParser, function(req, res, next) {
-  debug('POST Employee: /api/employee/register');
+employeeRouter.post('/api/store/:storeID/employee', jsonParser, function(req, res, next) {
+  debug('POST Employee: /api/store/:storeID/employee');
 
   if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body included.'));
 
@@ -22,7 +23,7 @@ employeeRouter.post('/api/employee/register', jsonParser, function(req, res, nex
   let employee = new Employee(req.body);
 
   employee.hashPassword(password)
-  .then( employee => employee.save())
+  .then( employee => Store.findByIdAndAddEmployee(req.params.storeID, employee))
   .then( employee => employee.generateToken())
   .then( token => {
     res.status(201).send(token);
