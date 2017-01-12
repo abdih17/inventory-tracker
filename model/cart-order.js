@@ -1,10 +1,10 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const CartProduct = require('./cart.js');
+const CartProduct = require('./cart-product.js');
 const createError = require('http-errors');
 const debug = require('debug')('inventory:cart order');
-const InventoryProduct = require('./inventory.js');
+const InventoryProduct = require('./inventory-product.js');
 const Schema = mongoose.Schema;
 
 const cartOrderSchema = Schema({
@@ -28,7 +28,7 @@ CartOrder.addCartProduct = function(cartOrderID, storeID, product) {
   .then(invProduct => {
     if (invProduct.quantity < product.quantity) return Promise.reject(createError(400, 'Store does not have that much inventory'));
     if (invProduct.quantity === 0) return Promise.reject(createError(400, 'Store is out of that product'));
-    
+
     invProduct.quantity -= product.quantity;
     return invProduct.save();
   })

@@ -3,8 +3,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// const InventoryOrder = require('./inventory-order.js');
-
 const inventoryProductSchema = Schema({
   name: { type: String, required: true },
   desc: { type: String, required:  true },

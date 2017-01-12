@@ -5,7 +5,7 @@ const debug = require('debug')('inventory:store');
 const createError = require('http-errors');
 const Promise = require('bluebird');
 const InventoryOrder = require('./inventory-order.js');
-const InventoryProduct = require('./inventory.js');
+const InventoryProduct = require('./inventory-product.js');
 const Schema = mongoose.Schema;
 const Employee = require('../model/employee.js');
 

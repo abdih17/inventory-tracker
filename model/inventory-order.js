@@ -1,10 +1,8 @@
 'use strict';
 
-'use strict';
-
 const mongoose = require('mongoose');
 const createError = require('http-errors');
-const InventoryProduct = require('./inventory.js');
+const InventoryProduct = require('./inventory-product.js');
 const debug = require('debug')('inventory:inventory order');
 const Schema = mongoose.Schema;
 

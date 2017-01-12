@@ -6,8 +6,8 @@ const Promise = require('bluebird');
 const Customer = require('../model/customer.js');
 const Store = require('../model/store.js');
 const CartOrder = require('../model/cart-order.js');
-const CartProduct = require('../model/cart.js');
-const InventoryProduct = require('../model/inventory.js');
+const CartProduct = require('../model/cart-product.js');
+const InventoryProduct = require('../model/inventory-product.js');
 
 require('../server.js');
 

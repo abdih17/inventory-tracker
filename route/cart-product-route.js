@@ -5,7 +5,7 @@ const parseJSON = require('body-parser').json();
 const createError = require('http-errors');
 const debug = require('debug')('student:assignment route');
 const CartOrder = require('../model/cart-order.js');
-const CartProduct = require('../model/cart.js');
+const CartProduct = require('../model/cart-product.js');
 const cartRouter = module.exports = new Router();
 
 cartRouter.post('/api/orders/:cartOrderID/:storeID/cart', parseJSON, function(request, response, next) {

@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const request = require('superagent');
 const Promise = require('bluebird');
 const Store = require('../model/store.js');
-const InventoryProduct = require('../model/inventory.js');
+const InventoryProduct = require('../model/inventory-product.js');
 const InventoryOrder = require('../model/inventory-order.js');
 
 require('../server.js');
@@ -337,6 +337,20 @@ describe('Inventory Product Routes', function () {
         });
       });
     });
+
+    describe('with a valid ID, but no body', () => {
+      it('should return a 400 error', done => {
+        request
+        .put(`${url}/api/inventory/${this.tempInventoryProduct._id}`)
+        .send({})
+        .end((err, res) => {
+          expect(err).to.be.an('error');
+          expect(res.status).to.equal(400);
+          expect(res.body).to.be.empty;
+          done();
+        });
+      });
+    });
   });
 
 //DELETE Route
@@ -377,6 +391,7 @@ describe('Inventory Product Routes', function () {
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
+          expect(res.body).to.be.empty;
           done();
         });
       });
@@ -389,6 +404,7 @@ describe('Inventory Product Routes', function () {
         .end((err, res) => {
           expect(err).to.be.an('error');
           expect(res.status).to.equal(404);
+          // expect(res.body).to.not.be.empty;
           done();
         });
       });
