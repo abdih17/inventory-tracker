@@ -6,7 +6,8 @@ const Promise = require('bluebird');
 const Store = require('../model/store.js');
 const Customer = require('../model/customer.js');
 
-require('../server.js');
+const server = require('../server.js');
+const serverToggle = require('./lib/server-toggle.js');
 
 const url = `http://localhost:${process.env.PORT}`;
 
@@ -52,6 +53,14 @@ const noUsernameCustomer = {
 };
 
 describe('Customer route', function() {
+  before(done => {
+    serverToggle.startServer(server, done);
+  });
+
+  after(done => {
+    serverToggle.stopServer(server, done);
+  });
+
   describe('POST: /api/signup', () => {
     afterEach(done => {
       Promise.all([
