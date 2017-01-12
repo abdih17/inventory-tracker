@@ -261,6 +261,20 @@ describe('Inventory Product Routes', function () {
       });
     });
 
+    describe('With no ID', () => {
+      it('should return an array of products', done => {
+        request
+        .get(`${url}/api/inventory`)
+        .end((err, response) => {
+          if (err) return done(err);
+          expect(response.status).to.equal(200);
+          expect(response.body).to.be.an('array');
+          expect(response.body).to.include(this.tempInventoryProduct._id.toString());
+          done();
+        });
+      });
+    });
+
     describe('with an invalid id', () => {
       it('should return a 404 error', done => {
         request
