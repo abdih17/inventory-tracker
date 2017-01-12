@@ -12,8 +12,6 @@ const inventoryOrderRouter = module.exports = Router();
 inventoryOrderRouter.post('/api/store/:storeID/inventory-order', jsonParser, function(req, res, next) {
   debug('POST: /api/store/:storeID/inventory-order');
 
-  if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body posted.'));
-
   Store.addInventoryOrder(req.params.storeID, req.body)
   .then(order => res.status(201).json(order))
   .catch(err => next(createError(404, err.message)));

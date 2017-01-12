@@ -84,13 +84,14 @@ describe('Inventory Order Routes', function() {
     });
 
     describe('with a valid ID, but no body', () => {
-      it('should return a 400 status', done => {
+      it('should return an order', done => {
         request
         .post(`${url}/api/store/${this.tempStore._id}/inventory-order`)
         .send({})
         .end((err, res) => {
-          expect(err).to.be.an('error');
-          expect(res.status).to.equal(400);
+          if(err) return done(err);
+          expect(res.status).to.equal(201);
+          expect(res.body.storeID).to.equal(this.tempStore._id.toString());
           done();
         });
       });
