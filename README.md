@@ -97,7 +97,7 @@ Information will be stored and organized with the following models/mongoose sche
   ```
 
 ### Store model:
-  - Everything else connects to the store.  
+  - Everything else connects to the store.
   ``` javascript
   const storeSchema = Schema({
     name: {type: String, required: true},
@@ -131,8 +131,27 @@ Install the dependencies:
 Base URL: [http://inventory-tracker-staging.herokuapp.com](http://inventory-tracker-staging.herokuapp.com)
 
 
+## Command Line Interface Instructions
+
+This API is configured for use in the command line. It is set up to run on your computer's local IP (this IP can be accessed with the identifier `localhost`).
+
+Before you can run this app locally, you need to set up your own environment variables locally. After you clone the app, in the command line, navigate into the root directory of the app and type `touch .env`
+Paste the following information:
+
+`PORT='8000'`
+`MONGODB_URI='mongodb://localhost/inventory-tracker'`
+`APP_SECRET='secret'`
+
+The port does not have to be 8000. Common port numbers for local development environments are 8000, 8080 and 3000. The app secret can be anything you want. Protect your app secret and never share your .env file.
+
+You will need MongoDB installed locally. You will also need a command line http tool installed. I recommend httpie, and I assume you have it installed for this example. Instructions assume you are using port 8000.
+
 `POST`
 
+  * In the command line, making sure you're in the root directory of your local version of the API, install the necessary dependencies for running the app by typing `npm i`
+  * In a **separate** window or pane of your command line interface, start MongoDB by typing `mongod`
+  * Then, start the node server by typing `npm run start`
+  * Let's set up a store. In a **separate** window or pane of your command line interface (the first two are running the node server and MongoDB in the background), type `http POST localhost:8000/api/store name="Store Name" storeNumber="207" address="123 Any St, Seattle, WA"`
 
 `GET`
 
