@@ -35,6 +35,10 @@
   - You'll never sell product you don't have.
   - Your life and logistical needs will be simplified.
 
+## Here is a visual to help you understand how the data is organized
+
+![](./Screen Shot 2017-01-13 at 9.35.16 AM.png)
+
 
 ## Information will be stored and organized with the following models/mongoose schemas.
 
