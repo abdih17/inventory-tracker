@@ -558,6 +558,11 @@ describe('Employee route', function() {
         .catch(done);
       });
 
+      after( done => {
+        Employee.remove({})
+        .then(() => done());
+      });
+
       it('should return a 403 \'forbidden\' error', done => {
         request.put(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
         .set({
@@ -567,6 +572,42 @@ describe('Employee route', function() {
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(403);
+          done();
+        });
+      });
+    });
+
+    describe('With an invalid authHeader', () => {
+      before( done => {
+        let employeeAssigned = new Employee(exampleEmployeeAssigned);
+
+        employeeAssigned.hashPassword(employeeAssigned.password)
+        .then(employeeAssigned => employeeAssigned.save())
+        .then(employeeAssigned => {
+          this.tempEmployeeAssigned = employeeAssigned;
+          return employeeAssigned.generateToken();
+        })
+        .then( tokenEmployeeAssigned => {
+          this.tempTokenEmployeeAssigned = tokenEmployeeAssigned;
+          done();
+        })
+        .catch(done);
+      });
+
+      after( done => {
+        Employee.remove({})
+        .then(() => done());
+      });
+
+      it('should return a 401 \'unauthorized\' error', done => {
+        request.put(`${url}/api/employee/${this.tempEmployeeAssigned._id}`)
+        .set({
+          Authorization: 'adfdfda'
+        })
+        .send(updatedEmployeePrivileges)
+        .end((err) => {
+          expect(err).to.be.an('error');
+          expect(err.status).to.equal(401);
           done();
         });
       });
