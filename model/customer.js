@@ -109,7 +109,7 @@ Customer.removeCartOrder = function(id) {
   return CartOrder.findById(id)
   .then(order => {
     this.tempOrder = order;
-    return CartOrder.findByIdAndRemove(order._id);
+    return order.remove({_id: order._id});
   })
   .then(() => Customer.findById(this.tempOrder.customerID))
   .then(customer => {

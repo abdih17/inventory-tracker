@@ -24,7 +24,6 @@ InventoryOrder.addInventoryProduct = function(id, product) {
 
   return InventoryOrder.findById(id)
   .then(order => {
-
     product.inventoryOrderID = order._id;
     this.tempOrder = order;
     return new InventoryProduct(product).save();

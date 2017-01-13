@@ -141,7 +141,7 @@ Store.removeInventoryOrder = function(id) {
   return InventoryOrder.findById(id)
   .then(order => {
     this.tempInventoryOrder = order;
-    return InventoryOrder.findByIdAndRemove(order._id);
+    return order.remove({_id: order._id});
   })
   .then(() => Store.findById(this.tempInventoryOrder.storeID))
   .then(store => {

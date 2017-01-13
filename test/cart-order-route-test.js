@@ -7,6 +7,7 @@ const CartOrder = require('../model/cart-order.js');
 const Customer = require('../model/customer.js');
 const Store = require('../model/store.js');
 const InventoryProduct = require('../model/inventory-product.js');
+const CartProduct = require('../model/cart-product.js');
 
 const server = require('../server.js');
 const serverToggle = require('./lib/server-toggle.js');
@@ -245,7 +246,10 @@ describe('Cart Order Routes', function() {
           if (err) return done(err);
           expect(response.status).to.equal(204);
           expect(response.body.shippingAddress).to.equal(undefined);
-          done();
+          CartProduct.findById(this.tempProduct._id).then(product => {
+            expect(product).to.equal(null);
+            done();
+          });
         });
       });
     });
