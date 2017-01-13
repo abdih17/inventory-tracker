@@ -228,7 +228,6 @@ describe('Customer route', function() {
         })
         .auth('', 'Testword')
         .end((err) => {
-          console.log('***********', err);
           expect(err).to.be.an('error');
           expect(err.status).to.equal(401);
           expect(err.message).to.equal('Unauthorized');
@@ -256,7 +255,6 @@ describe('Customer route', function() {
         .get(`${url}/api/signin`)
         .auth('', 'Testword')
         .end((err) => {
-          console.log('***********', err);
           expect(err).to.be.an('error');
           expect(err.status).to.equal(401);
           expect(err.message).to.equal('Unauthorized');
@@ -274,7 +272,6 @@ describe('Customer route', function() {
         })
         .auth('Tes username', '')
         .end((err) => {
-          console.log('***********', err);
           expect(err).to.be.an('error');
           expect(err.status).to.equal(401);
           expect(err.message).to.equal('Unauthorized');
@@ -289,7 +286,6 @@ describe('Customer route', function() {
         .get(`${url}/api/signin`)
         .auth('', '')
         .end((err) => {
-          console.log('***********', err);
           expect(err).to.be.an('error');
           expect(err.status).to.equal(401);
           expect(err.message).to.equal('Unauthorized');

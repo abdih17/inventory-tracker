@@ -189,7 +189,6 @@ describe('Inventory Product Routes', function () {
 
     describe('with a valid id, but invalid body', () => {
       it('should return a 400 status', done => {
-        console.log(this.tempInventoryOrder);
         request
         .post(`${url}/api/inventoryOrders/${this.tempInventoryOrder._id}/inventory`)
         .send({nam: 'test invalid'})
