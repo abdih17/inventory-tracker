@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - 'stable'
+services:
+  - mongodb
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+env:
+  -CXX=g++-4.8
+sudo: required
+before_script: npm i
+script:
+  - npm run test
+after_script:
+  - npm run test-travis
+  - 'cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
