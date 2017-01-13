@@ -378,11 +378,19 @@ describe('Store Routes', function() {
           expect(res.status).to.not.equal(404);
           expect(res.status).to.not.equal(400);
           expect(res.status).to.not.equal(500);
-          expect(InventoryProduct.findById(this.tempInventoryProduct._id).then(product => expect(product).to.equal(null)));
-          expect(CartOrder.findById(this.tempOrder._id).then(order => expect(order).to.equal(null)));
-          expect(InventoryOrder.findById(this.tempInventoryOrder._id).then(order => expect(order).to.equal(null)));
-          expect(Employee.findById(this.tempEmployee._id).then(employee => expect(employee).to.equal(null)));
-          done();
+          InventoryProduct.findById(this.tempInventoryProduct._id).then(product => {
+            expect(product).to.equal(null);
+          })
+          .then(CartOrder.findById(this.tempOrder._id).then(order => {
+            expect(order).to.equal(null);
+          }))
+          .then(InventoryOrder.findById(this.tempInventoryOrder._id).then(order => {
+            expect(order).to.equal(null);
+          }))
+          .then(Employee.findById(this.tempEmployee._id).then(employee => {
+            expect(employee).to.equal(null);
+            done();
+          }));
         });
       });
     });
