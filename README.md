@@ -2,14 +2,12 @@
 ##### **401 *group project***
 [Caleb](https://github.com/maschigokae), [Evan](https://github.com/EWPS07), [Hawa](https://github.com/abdih17), and [Steven](https://github.com/BatemanVO)
 
-https://coveralls.io/builds/9650871
-
 [![Build Status](https://travis-ci.org/abdih17/inventory-tracker.svg?branch=staging)](https://travis-ci.org/abdih17/inventory-tracker)
 [![Coverage Status](https://coveralls.io/repos/github/abdih17/inventory-tracker/badge.svg?branch=staging)](https://coveralls.io/github/abdih17/inventory-tracker?branch=3-coveralls)
 
 ## Overview
 
-- Full CRUD RESTful API, created built with [Express](http://expressjs.com/), [MongoDB](https://www.mongodb.com/cloud/atlas/lp/developers?jmp=search&utm_source=google&utm_campaign=Americas-US-MongoDB-to-Atlas-Brand-Alpha&utm_keyword=mongodb&utm_device=c&utm_network=g&utm_medium=cpc&utm_creative=165394248697&utm_matchtype=e&_bt=165394248697&_bk=mongodb&_bm=e&_bn=g&gclid=Cj0KEQiAzNfDBRD2xKrO4pSnnOkBEiQAbzzeQcni1gz1U6AbEnwmMUR6jnph6ZD5NaWyRb1nxuhMDN0aAnEC8P8HAQ).
+- Full CRUD RESTful API, built with [Express](http://expressjs.com/), [MongoDB](https://www.mongodb.com/cloud/atlas/lp/developers?jmp=search&utm_source=google&utm_campaign=Americas-US-MongoDB-to-Atlas-Brand-Alpha&utm_keyword=mongodb&utm_device=c&utm_network=g&utm_medium=cpc&utm_creative=165394248697&utm_matchtype=e&_bt=165394248697&_bk=mongodb&_bm=e&_bn=g&gclid=Cj0KEQiAzNfDBRD2xKrO4pSnnOkBEiQAbzzeQcni1gz1U6AbEnwmMUR6jnph6ZD5NaWyRb1nxuhMDN0aAnEC8P8HAQ).
 
 - Authorization and Authentication with [Bcrypt](https://www.npmjs.com/package/bcrypt) and [Crypto](https://nodejs.org/api/crypto.html)
 
@@ -251,4 +249,3 @@ You will need MongoDB installed locally. You will also need a command line http 
     Date: Fri, 13 Jan 2017 05:08:59 GMT
     X-Powered-By: Express
 ```
-### This API has almost endless possibilities and will continue to grow. Enjoy!
