@@ -172,7 +172,9 @@ You will need MongoDB installed locally. You will also need a command line http 
   * Then, start the node server by typing `npm run start`
   * Let's set up a store. In a **separate** window or pane of your command line interface (the first two are running the node server and MongoDB in the background), type `http POST localhost:8000/api/store name="Store Name" storeNumber="207" address="123 Any St, Seattle, WA"`
 
-  ##### Your response should look something like this
+  * After you make this `POST`, you should get a response back that gives you the information about the store you just added and some information that Mongo adds for you. One of those properties will be an ID that you will use in your `GET` request. Don't clear your terminal. Trust us, you can't remember the ID!
+
+##### Your response should look something like this
 
   ```
       HTTP/1.1 200 OK
@@ -198,9 +200,6 @@ You will need MongoDB installed locally. You will also need a command line http 
       }
   ```
 
-  After you make this `POST`, you should get a response back that gives you the information about the store you just added and some information that Mongo adds for you. One of those properties will be an ID that you will use in your `GET` request. Don't clear your terminal. Trust us, you can't remember the ID!
-
-##### Your response should look something like this.
 
 ### `GET`
   * To make a `GET` request.
@@ -252,3 +251,4 @@ You will need MongoDB installed locally. You will also need a command line http 
     Date: Fri, 13 Jan 2017 05:08:59 GMT
     X-Powered-By: Express
 ```
+### This API has almost endless possibilities and will continue to grow. Enjoy!
