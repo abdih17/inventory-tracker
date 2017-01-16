@@ -48,20 +48,20 @@ describe('Inventory Product Routes', function () {
     serverToggle.stopServer(server, done);
   });
 
-  describe('POST: /api/store/:storeID/inventory', () => {
+  describe('POST: /api/inventory-orders/:inventoryOrderID/complete-order', () => {
     before(done => {
       new Store(exampleStore).save()
       .then(store => {
         this.tempStore = store;
-        return Store.addInventoryOrder(store._id, exampleInventoryOrder);
+        return Store.addInventoryOrder(store._id, {});
       })
-      .then(inventoryOrder => {
-        this.tempInventoryOrder = inventoryOrder;
-        exampleInventoryProduct.orderID = inventoryOrder._id;
+      .then(order => {
+        this.tempInventoryOrder = order;
+        return InventoryOrder.addInventoryProduct(order._id, exampleInventoryProduct);
+      })
+      .then(product => {
+        this.tempInventoryProduct = product;
         done();
-      })
-      .catch((err) => {
-        done(err);
       });
     });
 
@@ -75,56 +75,19 @@ describe('Inventory Product Routes', function () {
       .catch(done);
     });
 
-    describe('with a valid id and body', () => {
-      it('should return an inventory', done => {
-        request.post(`${url}/api/store/${this.tempStore._id}/inventory`)
-        .send(exampleInventoryProduct)
-        .end((err, res) => {
-          if (err) return done(err);
-          this.tempInventoryProduct = res.body;
-          expect(res.status).to.equal(201);
-          expect(res.body).to.be.an('object');
-          expect(res.body.name).to.be.equal(exampleInventoryProduct.name);
-          expect(res.body.desc).to.be.equal(exampleInventoryProduct.desc);
-          expect(res.body.quantity).to.equal(exampleInventoryProduct.quantity);
-          expect(res.body.storeID).to.equal(this.tempStore._id.toString());
-          done();
-        });
-      });
-    });
-
-    describe('with an invalid id', () =>  {
-      it('should return a 404 status', done => {
-        request.post(`${url}/api/store/hello/inventory`)
-        .send(exampleInventoryProduct)
-        .end((err, res) => {
-          expect(err).to.be.an('error');
-          expect(res.status).to.equal(404);
-          done();
-        });
-      });
-    });
-
-    describe('with an empty body', () =>  {
-      it('should return a 404 status', done => {
-        request.post(`${url}/api/store/${this.tempStore._id}/inventory`)
-        .end((err, res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body).to.be.an('object');
-          expect(res.body).to.be.empty;
-          done();
-        });
-      });
-    });
-
-    describe('with a valid id, but invalid body', () => {
-      it('should return a 400 status', done => {
+    describe('With no current inventory', () => {
+      it('should return a 201 status', done => {
         request
-        .post(`${url}/api/store/${this.tempStore._id}/inventory`)
-        .end((err, res) => {
-          expect(err).to.be.an('error');
-          expect(res.status).to.equal(400);
-          done();
+        .post(`${url}/api/inventory-orders/${this.tempInventoryOrder._id}/complete-order`)
+        .end((err, response) => {
+          if (err) return done(err);
+          Store.findById(this.tempStore._id)
+          .then(store => {
+            expect(store.current.length).to.equal(1);
+            expect(store.current).to.include(this.tempInventoryProduct._id);
+            expect(response.status).to.equal(201);
+            done();
+          });
         });
       });
     });
