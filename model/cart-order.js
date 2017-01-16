@@ -26,14 +26,12 @@ CartOrder.addCartProduct = function(cartOrderID, storeID, product) {
   debug('addCartProduct');
 
   product.storeID = storeID;
-  console.log('PRODUCT PASSED IN IS', product);
   return InventoryProduct.findOne({
     name: product.name,
     desc: product.desc,
     storeID: storeID
   })
   .then(invProduct => {
-    console.log('INVPRODUCT IS', invProduct);
     if (invProduct.quantity < product.quantity) return Promise.reject(createError(400, 'Store does not have that much inventory'));
     if (invProduct.quantity === 0) return Promise.reject(createError(400, 'Store is out of that product'));
 

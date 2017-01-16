@@ -150,7 +150,7 @@ describe('Cart Order Routes', function() {
       })
       .then(product => {
         this.tempInventoryProduct = product;
-        Store.completeInventoryOrder(this.tempInventoryOrder._id);
+        return Store.completeInventoryOrder(this.tempInventoryOrder._id);
       })
       .then(() => CartOrder.addCartProduct(this.tempOrder._id, this.tempStore._id, exampleProduct))
       .then(product => {

@@ -47,7 +47,7 @@ describe('Inventory Order Routes', function() {
     serverToggle.stopServer(server, done);
   });
 
-  describe('POST: /api/inventories/:storeID/inventory-order', () => {
+  describe('POST: /api/store/:storeID/inventory-order', () => {
     before(done => {
       new Store(exampleStore).save()
       .then(store => {
@@ -107,12 +107,11 @@ describe('Inventory Order Routes', function() {
     });
 
     describe('with an empty body', () =>  {
-      it('should return a 400 status', done => {
-        request.post(`${url}/api/store/${this.tempStore._id}/inventory`)
+      it('should return a 201 status', done => {
+        request.post(`${url}/api/store/${this.tempStore._id}/inventory-order`)
         .end((err, res) => {
-          expect(res.status).to.equal(400);
+          expect(res.status).to.equal(201);
           expect(res.body).to.be.an('object');
-          expect(res.body).to.be.empty;
           done();
         });
       });
@@ -221,6 +220,7 @@ describe('Inventory Order Routes', function() {
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
+          done();
         });
       });
     });
