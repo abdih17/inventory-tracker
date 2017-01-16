@@ -132,6 +132,30 @@ describe('Inventory Product Routes', function () {
         });
       });
     });
+
+    describe('With current inventory and incorrect ID', () => {
+      before(done => {
+        Store.addInventoryOrder(this.tempStore._id, {})
+        .then(order => {
+          this.tempInvOrder = order;
+          return InventoryOrder.addInventoryProduct(order._id, exampleInventoryProduct);
+        })
+        .then(product => {
+          this.tempInvProduct = product;
+          done();
+        });
+      });
+
+      it('should return a 404 status', done => {
+        request
+        .post(`${url}/api/inventory-orders/69/complete-order`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
   });
 
   describe('POST: /api/inventory-orders/:inventoryOrderID/inventory', () => {
