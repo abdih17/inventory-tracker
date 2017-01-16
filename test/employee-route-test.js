@@ -222,7 +222,6 @@ describe('Employee route', function() {
     });
   });
 
-  // ************** GET TESTS **************
   describe('GET: /api/signin', () => {
     after(done => {
       Employee.remove({})
@@ -426,7 +425,6 @@ describe('Employee route', function() {
     });
   });
 
-  // ************** PUT TESTS **************
   describe('PUT to admin ID (valid request, valid auth)', () => {
     before( done => {
       let employeeAdmin = new Employee(exampleAdminEmployee);
@@ -672,7 +670,6 @@ describe('Employee route', function() {
     });
   });
 
-  // ************** DELETE TESTS **************
   describe('DELETE: /api/employee/:employeeID', () => {
     before( done => {
       let employeeAdmin = new Employee(exampleAdminEmployee);
@@ -733,7 +730,6 @@ describe('Employee route', function() {
       .then(() => done())
       .catch(done);
     });
-
 
     describe('With a valid ID and admin status', () => {
       it('should return a 204 status', done => {

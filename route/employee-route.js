@@ -3,11 +3,10 @@
 const Router = require('express').Router;
 const jsonParser = require('body-parser').json();
 const createError = require('http-errors');
-const basicAuth = require('../lib/basic-auth-middleware.js');
-const Store = require('../model/store.js');
-const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const debug = require('debug')('inventory:employeeRouter');
-
+const basicAuth = require('../lib/basic-auth-middleware.js');
+const bearerAuth = require('../lib/bearer-auth-middleware.js');
+const Store = require('../model/store.js');
 const Employee = require('../model/employee.js');
 
 const employeeRouter = module.exports = Router();

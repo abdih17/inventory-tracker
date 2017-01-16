@@ -21,7 +21,7 @@ inventoryOrderRouter.get('/api/inventories/:inventoryOrderID', function(req, res
   debug('GET: /api/inventories/:inventoryOrderID');
 
   InventoryOrder.findById(req.params.inventoryOrderID)
-  .populate('inventoryProduct')
+  .populate('inventories')
   .then(order => res.json(order))
   .catch(() => next(createError(404, 'Not found.')));
 });

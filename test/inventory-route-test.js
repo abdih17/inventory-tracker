@@ -130,8 +130,7 @@ describe('Inventory Product Routes', function () {
     });
   });
 
-  //Second POST
-  describe('POST: /api/inventoryOrders/:inventoryOrderID/inventory', () => {
+  describe('POST: /api/inventory-orders/:inventoryOrderID/inventory', () => {
     beforeEach(done => {
       new Store(exampleStore).save()
       .then(store => {
@@ -160,7 +159,7 @@ describe('Inventory Product Routes', function () {
 
     describe('with a valid id and body', () => {
       it('should return an inventory', done => {
-        request.post(`${url}/api/inventoryOrders/${this.tempInventoryOrder._id}/inventory`)
+        request.post(`${url}/api/inventory-orders/${this.tempInventoryOrder._id}/inventory`)
         .send(exampleInventoryProduct)
         .end((err, res) => {
           if (err) return done(err);
@@ -177,7 +176,7 @@ describe('Inventory Product Routes', function () {
 
     describe('with an invalid id', () =>  {
       it('should return a 404 status', done => {
-        request.post(`${url}/api/inventoryOrders/1234/inventory`)
+        request.post(`${url}/api/inventory-orders/1234/inventory`)
         .send(exampleInventoryProduct)
         .end((err, res) => {
           expect(err).to.be.an('error');
@@ -190,7 +189,7 @@ describe('Inventory Product Routes', function () {
     describe('with a valid id, but invalid body', () => {
       it('should return a 400 status', done => {
         request
-        .post(`${url}/api/inventoryOrders/${this.tempInventoryOrder._id}/inventory`)
+        .post(`${url}/api/inventory-orders/${this.tempInventoryOrder._id}/inventory`)
         .send({nam: 'test invalid'})
         .end((err, res) => {
           expect(err).to.be.an('error');
@@ -202,7 +201,7 @@ describe('Inventory Product Routes', function () {
 
     describe('with an empty body', () =>  {
       it('should return a 400 status', done => {
-        request.post(`${url}/api/inventoryOrders/${this.tempInventoryOrder._id}/inventory`)
+        request.post(`${url}/api/inventory-orders/${this.tempInventoryOrder._id}/inventory`)
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body).to.be.an('object');
@@ -213,7 +212,6 @@ describe('Inventory Product Routes', function () {
     });
   });
 
-// GET Route
   describe('GET: /api/inventory/:inventoryProductID', () => {
     beforeEach(done => {
       new Store(exampleStore).save()
@@ -287,7 +285,6 @@ describe('Inventory Product Routes', function () {
     });
   });
 
-//PUT Route
   describe('PUT: /api/inventory/:inventoryProductID', () => {
     beforeEach(done => {
       new Store(exampleStore).save()
@@ -375,7 +372,6 @@ describe('Inventory Product Routes', function () {
     });
   });
 
-//DELETE Route
   describe('DELETE: /api/inventory/:inventoryID', () => {
     beforeEach(done => {
       new Store(exampleStore).save()
@@ -426,7 +422,6 @@ describe('Inventory Product Routes', function () {
         .end((err, res) => {
           expect(err).to.be.an('error');
           expect(res.status).to.equal(404);
-          // expect(res.body).to.not.be.empty;
           done();
         });
       });
