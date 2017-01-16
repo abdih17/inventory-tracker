@@ -8,7 +8,7 @@ const inventoryProductSchema = Schema({
   desc: { type: String, required:  true },
   quantity: { type: Number, required: true },
   inventoryOrderID: { type: Schema.Types.ObjectId },
-  storeID: { type: Schema.Types.ObjectId, ref: 'store' }
+  storeID: { type: Schema.Types.ObjectId }
 });
 
 module.exports = mongoose.model('inventory', inventoryProductSchema);

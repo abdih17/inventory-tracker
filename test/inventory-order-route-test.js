@@ -221,10 +221,6 @@ describe('Inventory Order Routes', function() {
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
-          InventoryProduct.findById(this.tempInventoryProduct._id).then(product => {
-            expect(product).to.equal(null);
-            done();
-          });
         });
       });
     });
