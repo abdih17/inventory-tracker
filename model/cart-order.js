@@ -1,9 +1,9 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const CartProduct = require('./cart-product.js');
 const createError = require('http-errors');
 const debug = require('debug')('inventory:cart order');
+const CartProduct = require('./cart-product.js');
 const InventoryProduct = require('./inventory-product.js');
 const Schema = mongoose.Schema;
 

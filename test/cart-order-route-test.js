@@ -142,7 +142,7 @@ describe('Cart Order Routes', function() {
 
   describe('GET: /api/orders/:orderID', () => {
     before(done => {
-      Store.completeInventoryOrder(this.tempStore._id, sampleInventoryProduct)
+      Store.addInventoryProduct(this.tempStore._id, sampleInventoryProduct)
       .then(() => CartOrder.addCartProduct(this.tempOrder._id, this.tempStore._id, exampleProduct))
       .then(product => {
         this.tempProduct = product;

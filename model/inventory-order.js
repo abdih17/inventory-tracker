@@ -2,12 +2,12 @@
 
 const mongoose = require('mongoose');
 const createError = require('http-errors');
-const InventoryProduct = require('./inventory-product.js');
 const debug = require('debug')('inventory:inventory order');
+const InventoryProduct = require('./inventory-product.js');
 const Schema = mongoose.Schema;
 
 const inventoryOrderSchema = Schema({
-  inventories: [{type: Schema.Types.ObjectId, ref: 'inventoryProduct'}],
+  inventories: [{type: Schema.Types.ObjectId, ref: 'inventory'}],
   storeID: {type: Schema.Types.ObjectId, required: true},
   test: {type: String }
 });

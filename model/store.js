@@ -56,20 +56,8 @@ const storeSchema = Schema({
 
 storeSchema.pre('remove', function(next) {
   CartOrder.remove({storeID: this._id}).exec();
-  next();
-});
-
-storeSchema.pre('remove', function(next) {
   Employee.remove({storeID: this._id}).exec();
-  next();
-});
-
-storeSchema.pre('remove', function(next) {
   InventoryOrder.remove({storeID: this._id}).exec();
-  next();
-});
-
-storeSchema.pre('remove', function(next) {
   InventoryProduct.remove({storeID: this._id}).exec();
   next();
 });
@@ -94,9 +82,8 @@ Store.findByIdAndAddEmployee = function(id, employee) {
   .catch(() => Promise.reject(createError(400, 'Bad request.')));
 };
 
-
-Store.completeInventoryOrder = function(id, inventory) {
-  debug('completeInventoryOrder');
+Store.addInventoryProduct = function(id, inventory) {
+  debug('addInventoryProduct');
 
   return Store.findById(id)
   .then( store => {
@@ -112,7 +99,6 @@ Store.completeInventoryOrder = function(id, inventory) {
   .then(() => this.tempProduct)
   .catch( () => Promise.reject(createError(404, 'store not found')));
 };
-
 
 Store.addInventoryOrder = function(id, inventory) {
   debug('addInventoryOrder');

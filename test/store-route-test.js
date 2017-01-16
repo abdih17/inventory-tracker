@@ -116,7 +116,6 @@ describe('Store Routes', function() {
     });
   });
 
-  // GET ----------------------------------------------------------------
   describe('GET: /api/store/:id', function() {
     describe('with a valid id', function() {
       before( done => {
@@ -229,7 +228,6 @@ describe('Store Routes', function() {
     });
   });
 
-  // PUT -----------------------------------------------------------------------
   describe('PUT: /api/store/:id', function() {
     describe('with a valid id and body', function() {
       before( done => {
@@ -329,7 +327,7 @@ describe('Store Routes', function() {
       });
     });
   });
-  // DELETE --------------------------------------------------------------------
+
   describe('DELETE: /api/store/:id', function() {
     describe('with a valid id', function() {
       before( done => {
