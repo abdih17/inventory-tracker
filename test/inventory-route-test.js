@@ -75,7 +75,7 @@ describe('Inventory Product Routes', function () {
       .catch(done);
     });
 
-    describe('With no current inventory', () => {
+    describe('With no current inventory and correct ID', () => {
       it('should return a 201 status', done => {
         request
         .post(`${url}/api/inventory-orders/${this.tempInventoryOrder._id}/complete-order`)
@@ -88,6 +88,18 @@ describe('Inventory Product Routes', function () {
             expect(response.status).to.equal(201);
             done();
           });
+        });
+      });
+    });
+
+    describe('With no inventory and wrong ID', () => {
+      it('should return a 404 status', done => {
+        request
+        .post(`${url}/api/inventory-orders/69/complete-order`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
         });
       });
     });
