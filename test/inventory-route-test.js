@@ -83,6 +83,7 @@ describe('Inventory Product Routes', function () {
           if (err) return done(err);
           Store.findById(this.tempStore._id)
           .then(store => {
+            this.tempStore = store;
             expect(store.current.length).to.equal(1);
             expect(store.current).to.include(this.tempInventoryProduct._id);
             expect(response.status).to.equal(201);
@@ -100,6 +101,34 @@ describe('Inventory Product Routes', function () {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(404);
           done();
+        });
+      });
+    });
+
+    describe('With current inventory and correct ID', () => {
+      before(done => {
+        Store.addInventoryOrder(this.tempStore._id, {})
+        .then(order => {
+          this.tempInvOrder = order;
+          return InventoryOrder.addInventoryProduct(order._id, exampleInventoryProduct);
+        })
+        .then(product => {
+          this.tempInvProduct = product;
+          done();
+        });
+      });
+
+      it('should return a 201 status', done => {
+        request
+        .post(`${url}/api/inventory-orders/${this.tempInvOrder._id}/complete-order`)
+        .end((err, response) => {
+          if (err) return done(err);
+          InventoryProduct.findById(this.tempInventoryProduct._id)
+          .then(product => {
+            expect(response.status).to.equal(201);
+            expect(product.quantity).to.equal(24);
+            done();
+          });
         });
       });
     });
