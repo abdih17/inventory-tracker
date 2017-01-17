@@ -25,6 +25,7 @@ const CartOrder = module.exports = mongoose.model('cartOrder', cartOrderSchema);
 CartOrder.addCartProduct = function(cartOrderID, storeID, product) {
   debug('addCartProduct');
 
+  product.storeID = storeID;
   return InventoryProduct.findOne({
     name: product.name,
     desc: product.desc,

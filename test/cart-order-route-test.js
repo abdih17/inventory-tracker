@@ -7,6 +7,7 @@ const CartOrder = require('../model/cart-order.js');
 const Customer = require('../model/customer.js');
 const Store = require('../model/store.js');
 const InventoryProduct = require('../model/inventory-product.js');
+const InventoryOrder = require('../model/inventory-order.js');
 const CartProduct = require('../model/cart-product.js');
 
 const server = require('../server.js');
@@ -142,7 +143,15 @@ describe('Cart Order Routes', function() {
 
   describe('GET: /api/orders/:orderID', () => {
     before(done => {
-      Store.addInventoryProduct(this.tempStore._id, sampleInventoryProduct)
+      Store.addInventoryOrder(this.tempStore._id, {})
+      .then(order => {
+        this.tempInventoryOrder = order;
+        return InventoryOrder.addInventoryProduct(order._id, sampleInventoryProduct);
+      })
+      .then(product => {
+        this.tempInventoryProduct = product;
+        return Store.completeInventoryOrder(this.tempInventoryOrder._id);
+      })
       .then(() => CartOrder.addCartProduct(this.tempOrder._id, this.tempStore._id, exampleProduct))
       .then(product => {
         this.tempProduct = product;
