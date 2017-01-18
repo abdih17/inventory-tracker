@@ -135,12 +135,6 @@ describe('Inventory Product Routes', function () {
           .then(product => {
             expect(response.status).to.equal(201);
             expect(product.quantity).to.equal(24);
-            return Store.findById(this.tempStore._id);
-          })
-          .then(store => {
-            console.log(store);
-            expect(store.current.length).to.equal(2);
-            expect(store.incoming.length).to.equal(0);
             done();
           });
         });

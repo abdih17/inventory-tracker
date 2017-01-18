@@ -11,7 +11,7 @@ const InventoryProduct = require('../model/inventory-product.js');
 const inventoryRouter = module.exports = new Router();
 
 inventoryRouter.post('/api/inventory-orders/:inventoryOrderID/complete-order', jsonParser, function(req, res, next) {
-  debug('POST:/api/store/:storeID/inventory');
+  debug('POST:/api/inventory-orders/:inventoryOrderID/complete-order');
 
   Store.completeInventoryOrder(req.params.inventoryOrderID)
   .then(() => res.status(201).send('Item added to warehouse current inventory.'))
