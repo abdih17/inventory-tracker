@@ -112,7 +112,9 @@ Store.completeInventoryOrder = function(id) {
   .then(() => {
     this.tempOrder.inventories.splice(0, 1);
     if (this.tempOrder.inventories.length === 0) return Store.removeInventoryOrder(this.tempOrder._id);
-    return this.tempOrder.save();
+    this.tempOrder.save()
+    .then(order => Store.completeInventoryOrder(order._id))
+    .catch(err => Promise.reject(err));
   })
   .catch(err => Promise.reject(createError(404, err.message)));
 };

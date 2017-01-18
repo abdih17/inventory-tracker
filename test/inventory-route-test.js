@@ -18,6 +18,12 @@ const exampleInventoryProduct = {
   quantity: 12
 };
 
+const secondProduct = {
+  name: 'Test name',
+  desc: 'Test description',
+  quantity: 12
+};
+
 const exampleInventoryOrder = {
   inventories: []
 };
@@ -114,8 +120,10 @@ describe('Inventory Product Routes', function () {
         })
         .then(product => {
           this.tempInvProduct = product;
-          done();
-        });
+          return InventoryOrder.addInventoryProduct(this.tempInvOrder._id, secondProduct);
+        })
+        .then(() => done())
+        .catch(done);
       });
 
       it('should return a 201 status', done => {
