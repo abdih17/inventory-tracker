@@ -7,6 +7,7 @@ const Customer = require('../model/customer.js');
 const Store = require('../model/store.js');
 const CartOrder = require('../model/cart-order.js');
 const CartProduct = require('../model/cart-product.js');
+const InventoryOrder = require('../model/inventory-order.js');
 const InventoryProduct = require('../model/inventory-product.js');
 
 const server = require('../server.js');
@@ -34,10 +35,6 @@ const sampleStore = {
   address: 'Test store address'
 };
 
-const sampleOrder = {
-  products: []
-};
-
 const sampleProduct = {
   name: 'Test product',
   desc: 'Test description',
@@ -54,6 +51,7 @@ describe('Cart Product Routes', function() {
       Customer.remove({}),
       CartOrder.remove({}),
       CartProduct.remove({}),
+      InventoryOrder.remove({}),
       InventoryProduct.remove({}),
       Store.remove({})
     ])
@@ -65,27 +63,28 @@ describe('Cart Product Routes', function() {
     serverToggle.stopServer(server, done);
   });
 
-  describe('POST: /api/orders/:cartOrderID/:storeIDcart', () => {
+  describe('POST: /api/orders/:cartOrderID/:storeID/cart', () => {
     before(done => {
       new Store(sampleStore).save()
       .then(store => {
         this.tempStore = store;
-        sampleInventoryProduct.storeID = store._id;
-        sampleOrder.storeID = store._id;
-        return new Customer(sampleCustomer).save();
+        return Store.addInventoryOrder(store._id, {});
       })
+      .then(order => {
+        this.tempInventoryOrder = order;
+        return InventoryOrder.addInventoryProduct(order._id, sampleInventoryProduct);
+      })
+      .then(product => {
+        this.tempInventoryProduct = product;
+        return Store.completeInventoryOrder(this.tempInventoryOrder._id);
+      })
+      .then(() => new Customer(sampleCustomer).save())
       .then(customer => {
         this.tempCustomer = customer;
-        sampleOrder.customerID = customer._id;
-        return Customer.addCartOrder(customer._id, this.tempStore._id, sampleOrder);
+        return Customer.addCartOrder(customer._id, this.tempStore._id, {});
       })
       .then(order => {
         this.tempOrder = order;
-        sampleProduct.orderID = order._id;
-        return Store.addInventoryProduct(this.tempStore._id, sampleInventoryProduct);
-      })
-      .then(invProduct => {
-        this.tempInventoryProduct = invProduct;
         done();
       })
       .catch(done);

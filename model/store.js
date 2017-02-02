@@ -82,22 +82,41 @@ Store.findByIdAndAddEmployee = function(id, employee) {
   .catch(() => Promise.reject(createError(400, 'Bad request.')));
 };
 
-Store.addInventoryProduct = function(id, inventory) {
-  debug('addInventoryProduct');
+Store.completeInventoryOrder = function(id) {
+  debug('completeInventoryOrder');
 
-  return Store.findById(id)
-  .then( store => {
+  return InventoryOrder.findById(id)
+  .then(order => {
+    if (!order) return Promise.reject(404, 'Inventory order not found.');
+    this.tempOrder = order;
+    return Store.findById(order.storeID);
+  })
+  .then(store => {
     this.tempStore = store;
-    inventory.storeID = store._id;
-    return new InventoryProduct(inventory).save();
+    return InventoryProduct.findById(this.tempOrder.inventories[0]);
+  })
+  .then(inventoryOrderProduct => {
+    this.tempProduct = inventoryOrderProduct;
+    return InventoryProduct.findOne({name: inventoryOrderProduct.name, desc: inventoryOrderProduct.desc, storeID: this.tempStore._id});
   })
   .then(product => {
-    this.tempStore.current.push(product._id);
-    this.tempProduct = product;
-    return this.tempStore.save();
+    if (!product) {
+      this.tempProduct.storeID = this.tempStore._id;
+      this.tempStore.current.push(this.tempProduct);
+      return this.tempProduct.save();
+    }
+    product.quantity += this.tempProduct.quantity;
+    return product.save();
   })
-  .then(() => this.tempProduct)
-  .catch( () => Promise.reject(createError(404, 'store not found')));
+  .then(() => this.tempStore.save())
+  .then(() => {
+    this.tempOrder.inventories.splice(0, 1);
+    if (this.tempOrder.inventories.length === 0) return Store.removeInventoryOrder(this.tempOrder._id);
+    this.tempOrder.save()
+    .then(order => Store.completeInventoryOrder(order._id))
+    .catch(err => Promise.reject(err));
+  })
+  .catch(err => Promise.reject(createError(404, err.message)));
 };
 
 Store.addInventoryOrder = function(id, inventory) {

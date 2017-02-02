@@ -10,18 +10,12 @@ const InventoryProduct = require('../model/inventory-product.js');
 
 const inventoryRouter = module.exports = new Router();
 
-inventoryRouter.post('/api/store/:storeID/inventory', jsonParser, function(req, res, next) {
-  debug('POST:/api/store/:storeID/inventory');
+inventoryRouter.post('/api/inventory-orders/:inventoryOrderID/complete-order', jsonParser, function(req, res, next) {
+  debug('POST:/api/inventory-orders/:inventoryOrderID/complete-order');
 
-  if (Object.getOwnPropertyNames(req.body).length === 0) next(createError(400, 'No body included.'));
-
-  Store.addInventoryProduct(req.params.storeID, req.body)
-  .then( inventory => {
-    res.status(201).json(inventory);
-  })
-  .catch(() => {
-    next(createError(404, 'Store not found'));
-  });
+  Store.completeInventoryOrder(req.params.inventoryOrderID)
+  .then(() => res.status(201).send('Item added to warehouse current inventory.'))
+  .catch(err => next(err));
 });
 
 inventoryRouter.post('/api/inventory-orders/:inventoryOrderID/inventory', jsonParser, function(req, res, next) {
