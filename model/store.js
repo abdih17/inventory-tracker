@@ -140,6 +140,23 @@ Store.addInventoryOrder = function(id, inventory) {
   .catch(err => Promise.reject(createError(404, err.message)));
 };
 
+Store.addInventoryProduct = function(id, inventoryProduct) {
+  debug('addInventoryProduct');
+
+  return Store.findById(id)
+  .catch(err => Promise.reject(createError(404, err.message)))
+  .then(store => {
+    inventoryProduct.storeID = store._id;
+    this.tempStore = store;
+    return new InventoryProduct(inventoryProduct).save();
+  })
+  .then(product => {
+    this.tempStore.current.push(product._id);
+    return product;
+  })
+  .catch(err => Promise.reject(createError(404, err.message)));
+};
+
 Store.removeInventoryOrder = function(id) {
   debug('removeInventoryOrder');
 
