@@ -15,12 +15,16 @@ const url = `http://localhost:${process.env.PORT}`;
 const exampleInventoryProduct = {
   name: 'Test name',
   desc: 'Test description',
+  category: 'Test',
+  price: 1099,
   quantity: 12
 };
 
 const secondProduct = {
   name: 'Test name',
   desc: 'Test description',
+  category: 'New test',
+  price: 899,
   quantity: 12
 };
 
