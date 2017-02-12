@@ -170,6 +170,50 @@ describe('Inventory Product Routes', function () {
     });
   });
 
+  describe('POST: /api/store/:storeID/inventory', () => {
+    before(done => {
+      new Store(exampleStore).save()
+      .then(store => {
+        this.tempStore = store;
+        return Store.addInventoryProduct(store._id, exampleInventoryProduct);
+      })
+      .then(product => {
+        product.storeID = this.tempStore._id;
+        this.tempProduct = product;
+        done();
+      })
+      .catch(err => done(err));
+    });
+
+    after(done => {
+      Promise.all([
+        Store.remove({}),
+        InventoryProduct.remove({})
+      ])
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('With a valid ID and body', () => {
+      it('should return a product', done => {
+        request
+        .post(`${url}/api/store/${this.tempStore._id}/inventory`)
+        .send(exampleInventoryProduct)
+        .end((err, response) => {
+          Store.findById(this.tempStore._id)
+          .then(store => {
+            expect(response.body.name).to.equal(this.tempProduct.name);
+            expect(response.body.desc).to.equal(this.tempProduct.desc);
+            expect(response.body.category).to.equal(this.tempProduct.category);
+            expect(store.current.length).to.be.at.least(1);
+            expect(store.current).to.include(this.tempProduct._id);
+            done();
+          });
+        });
+      });
+    });
+  });
+
   describe('POST: /api/inventory-orders/:inventoryOrderID/inventory', () => {
     beforeEach(done => {
       new Store(exampleStore).save()

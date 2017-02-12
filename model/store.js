@@ -152,8 +152,10 @@ Store.addInventoryProduct = function(id, inventoryProduct) {
   })
   .then(product => {
     this.tempStore.current.push(product._id);
-    return product;
+    this.tempProduct = product;
+    return this.tempStore.save();
   })
+  .then(() => this.tempProduct)
   .catch(err => Promise.reject(createError(404, err.message)));
 };
 
