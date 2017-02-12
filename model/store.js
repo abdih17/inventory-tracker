@@ -156,7 +156,7 @@ Store.addInventoryProduct = function(id, inventoryProduct) {
     return this.tempStore.save();
   })
   .then(() => this.tempProduct)
-  .catch(err => Promise.reject(createError(404, err.message)));
+  .catch(err => Promise.reject(err));
 };
 
 Store.removeInventoryOrder = function(id) {
