@@ -194,7 +194,7 @@ describe('Inventory Product Routes', function () {
       .catch(done);
     });
 
-    describe('With a valid ID and body', () => {
+    describe('with a valid ID and body', () => {
       it('should return a product', done => {
         request
         .post(`${url}/api/store/${this.tempStore._id}/inventory`)
@@ -209,6 +209,19 @@ describe('Inventory Product Routes', function () {
             expect(store.current).to.include(this.tempProduct._id);
             done();
           });
+        });
+      });
+    });
+
+    describe('with an invalid store ID', () => {
+      it('should return a 404 error', done => {
+        request
+        .post(`${url}/api/store/1234/inventory`)
+        .send(exampleInventoryProduct)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
         });
       });
     });
