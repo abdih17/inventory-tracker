@@ -7,6 +7,8 @@ const cartProductSchema = Schema({
   name: {type: String, required: true},
   desc: {type: String, required: true},
   quantity: {type: Number, required: true},
+  category: {type: String, required: true},
+  price: {type: Number, required: true},
   cartOrderID: {type: Schema.Types.ObjectId, required: true}
 });
 

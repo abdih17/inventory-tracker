@@ -15,12 +15,16 @@ const url = `http://localhost:${process.env.PORT}`;
 const exampleInventoryProduct = {
   name: 'Test name',
   desc: 'Test description',
+  category: 'Test',
+  price: 1099,
   quantity: 12
 };
 
 const secondProduct = {
   name: 'Test name',
   desc: 'Test description',
+  category: 'New test',
+  price: 899,
   quantity: 12
 };
 
@@ -160,6 +164,88 @@ describe('Inventory Product Routes', function () {
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('POST: /api/store/:storeID/inventory', () => {
+    before(done => {
+      new Store(exampleStore).save()
+      .then(store => {
+        this.tempStore = store;
+        return Store.addInventoryProduct(store._id, exampleInventoryProduct);
+      })
+      .then(product => {
+        product.storeID = this.tempStore._id;
+        this.tempProduct = product;
+        done();
+      })
+      .catch(err => done(err));
+    });
+
+    after(done => {
+      Promise.all([
+        Store.remove({}),
+        InventoryProduct.remove({})
+      ])
+      .then(() => done())
+      .catch(done);
+    });
+
+    describe('with a valid ID and body', () => {
+      it('should return a product', done => {
+        request
+        .post(`${url}/api/store/${this.tempStore._id}/inventory`)
+        .send(exampleInventoryProduct)
+        .end((err, response) => {
+          Store.findById(this.tempStore._id)
+          .then(store => {
+            expect(response.body.name).to.equal(this.tempProduct.name);
+            expect(response.body.desc).to.equal(this.tempProduct.desc);
+            expect(response.body.category).to.equal(this.tempProduct.category);
+            expect(store.current.length).to.be.at.least(1);
+            expect(store.current).to.include(this.tempProduct._id);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('with an invalid store ID', () => {
+      it('should return a 404 error', done => {
+        request
+        .post(`${url}/api/store/1234/inventory`)
+        .send(exampleInventoryProduct)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(404);
+          done();
+        });
+      });
+    });
+
+    describe('with a valid ID, but no body', () => {
+      it('should return a 400 error', done => {
+        request
+        .post(`${url}/api/store/${this.tempStore._id}/inventory`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
+
+    describe('with a valid ID, but an invalid body', () => {
+      it('should return a 400 error', done => {
+        request
+        .post(`${url}/api/store/${this.tempStore._id}/inventory`)
+        .send({name: 'Stuff', desc: 'Dude', price: 833})
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
           done();
         });
       });

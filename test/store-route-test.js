@@ -25,6 +25,8 @@ const sampleEmployee = {
 const sampleInventoryProduct = {
   name: 'Test invProduct',
   desc: 'Test invProduct desc',
+  category: 'Test',
+  price: 1099,
   quantity: 100
 };
 

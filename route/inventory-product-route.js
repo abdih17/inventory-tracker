@@ -14,7 +14,17 @@ inventoryRouter.post('/api/inventory-orders/:inventoryOrderID/complete-order', j
   debug('POST:/api/inventory-orders/:inventoryOrderID/complete-order');
 
   Store.completeInventoryOrder(req.params.inventoryOrderID)
-  .then(() => res.status(201).send('Item added to warehouse current inventory.'))
+  .then(() => res.status(201).send('Items added to warehouse current inventory.'))
+  .catch(err => next(err));
+});
+
+inventoryRouter.post('/api/store/:storeID/inventory', jsonParser, function(request, response, next) {
+  debug('POST: /api/store/:storeID/inventory');
+
+  if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body included.'));
+
+  Store.addInventoryProduct(request.params.storeID, request.body)
+  .then(product => response.status(201).json(product))
   .catch(err => next(err));
 });
 
