@@ -225,6 +225,18 @@ describe('Inventory Product Routes', function () {
         });
       });
     });
+
+    describe('with a valid ID, but no body', () => {
+      it('should return a 400 error', done => {
+        request
+        .post(`${url}/api/store/${this.tempStore._id}/inventory`)
+        .end((err, response) => {
+          expect(err).to.be.an('error');
+          expect(response.status).to.equal(400);
+          done();
+        });
+      });
+    });
   });
 
   describe('POST: /api/inventory-orders/:inventoryOrderID/inventory', () => {

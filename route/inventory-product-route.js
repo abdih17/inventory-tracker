@@ -21,6 +21,8 @@ inventoryRouter.post('/api/inventory-orders/:inventoryOrderID/complete-order', j
 inventoryRouter.post('/api/store/:storeID/inventory', jsonParser, function(request, response, next) {
   debug('POST: /api/store/:storeID/inventory');
 
+  if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body included.'));
+
   Store.addInventoryProduct(request.params.storeID, request.body)
   .then(product => response.status(201).json(product))
   .catch(err => next(err));
