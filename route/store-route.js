@@ -33,7 +33,7 @@ storeRouter.get('/api/store', function(request, response, next) {
   Store.find({})
   .then(arrayOfStores => {
     if (arrayOfStores.length === 0) return Promise.reject(createError(416, 'Data not found.'));
-    response.json(arrayOfStores.map(store => store._id));
+    response.json(arrayOfStores);
   })
   .catch(err => next(err));
 });
