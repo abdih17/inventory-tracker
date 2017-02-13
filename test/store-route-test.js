@@ -224,7 +224,7 @@ describe('Store Routes', function() {
         if (err) return done(err);
         expect(response.status).to.equal(200);
         expect(response.body).to.be.an('array');
-        expect(response.body).to.include(this.tempStore._id.toString());
+        expect(response.body[0]._id).to.equal(this.tempStore._id.toString());
         done();
       });
     });
