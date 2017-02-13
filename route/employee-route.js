@@ -21,11 +21,25 @@ employeeRouter.post('/api/store/:storeID/employee', jsonParser, function(req, re
 
   let employee = new Employee(req.body);
 
+  let tempEmployee = {};
+
   employee.hashPassword(password)
   .then( employee => Store.findByIdAndAddEmployee(req.params.storeID, employee))
-  .then( employee => employee.generateToken())
+  .then( employee => {
+    tempEmployee = employee;
+    return employee.generateToken();
+  })
   .then( token => {
-    res.status(201).send(token);
+    res.status(201).json({
+      _id: tempEmployee._id,
+      name: tempEmployee.name,
+      username: tempEmployee.username,
+      email: tempEmployee.email,
+      admin: tempEmployee.admin,
+      receiving: tempEmployee.receiving,
+      shipping: tempEmployee.shipping,
+      token
+    });
   })
   .catch(next);
 });
@@ -37,6 +51,7 @@ employeeRouter.get('/api/employee/signin', basicAuth, function(req, res, next) {
   .then( employee => employee.validatePassword(req.auth.password))
   .then( employee => {
     return res.json({
+      _id: employee._id,
       name: employee.name,
       username: employee.username,
       email: employee.email,

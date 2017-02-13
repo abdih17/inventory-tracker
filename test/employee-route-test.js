@@ -128,9 +128,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleAdminEmployee.name);
+            expect(response.body.username).to.equal(exampleAdminEmployee.username);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
@@ -147,9 +148,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleEmployeeUnassigned.name);
+            expect(response.body.username).to.equal(exampleEmployeeUnassigned.username);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
@@ -166,9 +168,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleEmployeeAssigned.name);
+            expect(response.body.username).to.equal(exampleEmployeeAssigned.username);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
@@ -185,9 +188,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleEmployeeDefaultUsername.name);
+            expect(response.body.username).to.equal(exampleEmployeeDefaultUsername.email);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
