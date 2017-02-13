@@ -226,7 +226,7 @@ describe('Employee route', function() {
     });
   });
 
-  describe('GET: /api/signin', () => {
+  describe('GET: /api/employee/signin', () => {
     after(done => {
       Employee.remove({})
       .then(() => done())
@@ -256,6 +256,7 @@ describe('Employee route', function() {
           expect(response.body.username).to.equal(exampleAdminEmployee.username);
           expect(response.body.email).to.equal(exampleAdminEmployee.email);
           expect(response.body.admin).to.equal(true);
+          expect(response.body.token).to.be.a('string');
           expect(response.body.password).to.equal(undefined);
           done();
         });
