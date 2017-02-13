@@ -21,7 +21,13 @@ customerRouter.post('/api/signup', jsonParser, function(req, res, next) {
   customer.hashPassword(password)
   .then( customer => customer.save())
   .then( customer => {
-    res.status(201).json(customer.username);
+    return res.status(201).json({
+      _id: customer._id,
+      name: customer.name,
+      address: customer.address,
+      email: customer.email,
+      username: customer.username,
+      currentOrders: customer.currentOrders});
   })
   .catch(next);
 });
@@ -34,10 +40,11 @@ customerRouter.get('/api/signin', basicAuth, function(req, res, next) {
   .then(customer => customer.validatePassword(req.auth.password))
   .then(customer => {
     return res.json({
-      id: customer._id,
+      _id: customer._id,
       name: customer.name,
       address: customer.address,
       email: customer.email,
+      username: customer.username,
       currentOrders: customer.currentOrders});
   })
   .catch(() => next(createError(401, 'Invalid login')));

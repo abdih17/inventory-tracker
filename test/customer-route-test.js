@@ -79,8 +79,10 @@ describe('Customer route', function() {
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(201);
-          expect(response.body).to.be.a('string');
-          expect(response.body).to.equal(exampleCustomer.username);
+          expect(response.body).to.be.an('object');
+          expect(response.body.username).to.equal(exampleCustomer.username);
+          expect(response.body.email).to.equal(exampleCustomer.email);
+          expect(response.body._id).to.be.an('string');
           done();
         });
       });
@@ -94,8 +96,8 @@ describe('Customer route', function() {
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(201);
-          expect(response.body).to.be.a('string');
-          expect(response.body).to.equal(noUsernameCustomer.email);
+          expect(response.body).to.be.an('object');
+          expect(response.body.username).to.equal(noUsernameCustomer.email);
           done();
         });
       });
@@ -171,7 +173,7 @@ describe('Customer route', function() {
           expect(response.body.currentOrders.length).to.equal(1);
           expect(response.body.currentOrders[0].customerID).to.equal(this.tempCustomer._id.toString());
           expect(response.body.password).to.equal(undefined);
-          expect(response.body.username).to.equal(undefined);
+          expect(response.body.username).to.equal(exampleCustomer.username);
           done();
         });
       });
