@@ -12,7 +12,8 @@ const cartOrderSchema = Schema({
   shippingName: {type: String, required: true},
   customerID: {type: Schema.Types.ObjectId, required: true},
   storeID: {type: Schema.Types.ObjectId, required: true},
-  products: [{type: Schema.Types.ObjectId, ref: 'cartProduct'}]
+  products: [{type: Schema.Types.ObjectId, ref: 'cartProduct'}],
+  completed: {type: Boolean}
 });
 
 cartOrderSchema.pre('remove', function(next) {
