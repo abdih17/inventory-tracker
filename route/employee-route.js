@@ -69,13 +69,23 @@ employeeRouter.get('/api/employee/signin', basicAuth, function(req, res, next) {
   .catch(() => next(createError(401, 'Invalid login')));
 });
 
-employeeRouter.get('/api/employee', function(request, response, next) {
-  debug('GET: /api/employee');
+employeeRouter.get('/api/store/:storeID/employees', bearerAuth, function(request, response, next) {
+  debug('GET: /api/store/:storeID/employees');
 
-  Employee.find({})
+  Employee.find({storeID: request.params.storeID})
   .then(arrayOfEmployees => {
     if (arrayOfEmployees.length === 0) return Promise.reject(createError(416, 'Data not found.'));
-    response.json(arrayOfEmployees.map(employee => employee._id));
+    response.json(arrayOfEmployees.map(employee => {
+      return {
+        _id: employee._id,
+        name: employee.name,
+        username: employee.username,
+        email: employee.email,
+        admin: employee.admin,
+        receiving: employee.receiving,
+        shipping: employee.shipping
+      };
+    }));
   })
   .catch(err => next(err));
 });

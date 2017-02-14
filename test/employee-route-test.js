@@ -381,12 +381,20 @@ describe('Employee route', function() {
 
     describe('With no ID', () => {
       before( done => {
-        let employeeAdminB = new Employee(exampleAdminEmployeeB);
-
-        employeeAdminB.hashPassword(employeeAdminB.password)
+        new Store(sampleStore).save()
+        .then(store => {
+          this.tempStore = store;
+          let employeeAdminB = new Employee(exampleAdminEmployeeB);
+          return employeeAdminB.hashPassword(employeeAdminB.password);
+        })
         .then(employeeAdmin => employeeAdmin.save())
         .then(employeeAdmin => {
           this.tempEmployeeAdminB = employeeAdmin;
+          this.tempEmployeeAdminB.storeID = this.tempStore._id;
+          return this.tempEmployeeAdminB.generateToken();
+        })
+        .then(token => {
+          this.tempTokenEmployeeAdmin = token;
           done();
         })
         .catch(done);
@@ -394,33 +402,55 @@ describe('Employee route', function() {
 
       after( done => {
         Employee.findByIdAndRemove(this.tempEmployeeAdminB._id)
+        .then(() => Store.remove({}))
         .then(() => done())
         .catch(done);
       });
 
       it('should return an array of employees', done => {
         request
-        .get(`${url}/api/employee`)
+        .get(`${url}/api/store/${this.tempStore._id}/employees`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(200);
           expect(response.body).to.be.an('array');
           expect(response.body.length).to.be.at.least(1);
+          expect(response.body[0].name).to.equal(exampleAdminEmployeeB.name);
           done();
         });
       });
     });
 
-    describe('GET: /api/employee with no ID, but no data', () => {
-      before(done => {
-        Employee.remove({})
+    describe('GET: /api/store/:storeID/employees with no ID, but no data', () => {
+      before( done => {
+        new Store(sampleStore).save()
+        .then(store => {
+          this.tempStore = store;
+          let employeeAdminB = new Employee(exampleAdminEmployeeB);
+          return employeeAdminB.hashPassword(employeeAdminB.password);
+        })
+        .then(employeeAdmin => employeeAdmin.save())
+        .then(employeeAdmin => {
+          this.tempEmployeeAdminB = employeeAdmin;
+          return this.tempEmployeeAdminB.generateToken();
+        })
+        .then(token => {
+          this.tempTokenEmployeeAdmin = token;
+          return Employee.remove({});
+        })
         .then(() => done())
         .catch(done);
       });
 
       it('should return a 416 error', done => {
         request
-        .get(`${url}/api/employee`)
+        .get(`${url}/api/store/${this.tempStore._id}/employees`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(416);
