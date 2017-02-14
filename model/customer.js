@@ -41,7 +41,8 @@ const customerSchema = Schema({
     {
       type: String
     }
-  ]
+  ],
+  favoriteStore: {type: String}
 });
 
 customerSchema.pre('save', function(next) {

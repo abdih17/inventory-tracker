@@ -27,7 +27,8 @@ customerRouter.post('/api/signup', jsonParser, function(req, res, next) {
       address: customer.address,
       email: customer.email,
       username: customer.username,
-      currentOrders: customer.currentOrders});
+      currentOrders: customer.currentOrders,
+      favoriteStore: customer.favoriteStore});
   })
   .catch(next);
 });
@@ -45,7 +46,8 @@ customerRouter.get('/api/signin', basicAuth, function(req, res, next) {
       address: customer.address,
       email: customer.email,
       username: customer.username,
-      currentOrders: customer.currentOrders});
+      currentOrders: customer.currentOrders,
+      favoriteStore: customer.favoriteStore});
   })
   .catch(() => next(createError(401, 'Invalid login')));
 });
