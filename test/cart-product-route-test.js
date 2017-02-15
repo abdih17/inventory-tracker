@@ -187,18 +187,33 @@ describe('Cart Product Routes', function() {
     });
   });
 
-  describe('PUT: /api/products/:productID', () => {
+  describe('PUT: /api/store/:storeID/products/:productID', () => {
+    before(done => {
+      sampleProduct.quantity = 5;
+      this.tempInventoryProduct.storeID = this.tempStore._id;
+      this.tempInventoryProduct.save()
+      .then(product => {
+        this.tempInventoryProduct = product;
+        done();
+      })
+      .catch(done);
+    });
+
+    after(done => {
+      InventoryProduct.remove({})
+      .then(() => done())
+      .catch(done);
+    });
+
     describe('With a valid ID and body', () => {
       it('should return an updated product', done => {
         request
-        .put(`${url}/api/products/${this.tempProduct._id}`)
-        .send({name: 'New name'})
+        .put(`${url}/api/store/${this.tempStore._id}/products/${this.tempProduct._id}`)
+        .send(sampleProduct)
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(200);
-          expect(response.body.name).to.equal('New name');
-          expect(response.body.desc).to.equal(this.tempProduct.desc);
-          expect(response.body.quantity).to.equal(this.tempProduct.quantity);
+          expect(response.body.quantity).to.equal(this.tempProduct.quantity + 5);
           expect(response.body.cartOrderID).to.equal(this.tempProduct.cartOrderID.toString());
           done();
         });
@@ -208,8 +223,8 @@ describe('Cart Product Routes', function() {
     describe('With an invalid ID', () => {
       it('should return a 404 error', done => {
         request
-        .put(`${url}/api/products/69`)
-        .send({name: 'New name'})
+        .put(`${url}/api/store/${this.tempStore._id}/products/69`)
+        .send({quantity: 10})
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(404);
@@ -221,7 +236,7 @@ describe('Cart Product Routes', function() {
     describe('With a valid ID, but invalid body', () => {
       it('should return a 400 error', done => {
         request
-        .put(`${url}/api/products/${this.tempProduct._id}`)
+        .put(`${url}/api/store/${this.tempStore._id}/products/${this.tempProduct._id}`)
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(400);

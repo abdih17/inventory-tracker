@@ -54,6 +54,30 @@ CartOrder.addCartProduct = function(cartOrderID, storeID, product) {
   .catch(err => Promise.reject(createError(404, err.message)));
 };
 
+CartOrder.updateCartProduct = function(cartProductID, storeID, product) {
+  debug('addCartProduct');
+
+  return InventoryProduct.findOne({
+    name: product.name,
+    desc: product.desc,
+    storeID: storeID
+  })
+  .then(invProduct => {
+    if (invProduct.quantity < product.quantity) return Promise.reject(createError(400, 'Store does not have that much inventory'));
+    if (invProduct.quantity === 0) return Promise.reject(createError(400, 'Store is out of that product'));
+
+    invProduct.quantity -= product.quantity;
+    return invProduct.save();
+  })
+  .then(() => CartProduct.findById(cartProductID))
+  .then(_product => {
+    _product.quantity += product.quantity;
+    return _product.save();
+  })
+  .then(product => product)
+  .catch(err => Promise.reject(createError(404, err.message)));
+};
+
 CartOrder.removeCartProduct = function(id) {
   debug('removeCartProduct');
 
