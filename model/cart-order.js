@@ -12,6 +12,7 @@ const cartOrderSchema = Schema({
   shippingName: {type: String, required: true},
   customerID: {type: Schema.Types.ObjectId, required: true},
   storeID: {type: Schema.Types.ObjectId, required: true},
+  date: { type: Date, default: Date.now() },
   products: [{type: Schema.Types.ObjectId, ref: 'cartProduct'}],
   completed: {type: Boolean}
 });
