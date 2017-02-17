@@ -21,11 +21,25 @@ employeeRouter.post('/api/store/:storeID/employee', jsonParser, function(req, re
 
   let employee = new Employee(req.body);
 
+  let tempEmployee = {};
+
   employee.hashPassword(password)
   .then( employee => Store.findByIdAndAddEmployee(req.params.storeID, employee))
-  .then( employee => employee.generateToken())
+  .then( employee => {
+    tempEmployee = employee;
+    return employee.generateToken();
+  })
   .then( token => {
-    res.status(201).send(token);
+    res.status(201).json({
+      _id: tempEmployee._id,
+      name: tempEmployee.name,
+      username: tempEmployee.username,
+      email: tempEmployee.email,
+      admin: tempEmployee.admin,
+      receiving: tempEmployee.receiving,
+      shipping: tempEmployee.shipping,
+      token
+    });
   })
   .catch(next);
 });
@@ -33,28 +47,45 @@ employeeRouter.post('/api/store/:storeID/employee', jsonParser, function(req, re
 employeeRouter.get('/api/employee/signin', basicAuth, function(req, res, next) {
   debug('GET Employee: /api/employee/signin');
 
+  let tempEmployee = {};
   Employee.findOne({ username: req.auth.username })
   .then( employee => employee.validatePassword(req.auth.password))
   .then( employee => {
+    tempEmployee = employee;
+    return employee.generateToken();
+  })
+  .then( token => {
     return res.json({
-      name: employee.name,
-      username: employee.username,
-      email: employee.email,
-      admin: employee.admin,
-      receiving: employee.receiving,
-      shipping: employee.shipping,
+      _id: tempEmployee._id,
+      name: tempEmployee.name,
+      username: tempEmployee.username,
+      email: tempEmployee.email,
+      admin: tempEmployee.admin,
+      receiving: tempEmployee.receiving,
+      shipping: tempEmployee.shipping,
+      token
     });
   })
   .catch(() => next(createError(401, 'Invalid login')));
 });
 
-employeeRouter.get('/api/employee', function(request, response, next) {
-  debug('GET: /api/employee');
+employeeRouter.get('/api/store/:storeID/employees', bearerAuth, function(request, response, next) {
+  debug('GET: /api/store/:storeID/employees');
 
-  Employee.find({})
+  Employee.find({storeID: request.params.storeID})
   .then(arrayOfEmployees => {
     if (arrayOfEmployees.length === 0) return Promise.reject(createError(416, 'Data not found.'));
-    response.json(arrayOfEmployees.map(employee => employee._id));
+    response.json(arrayOfEmployees.map(employee => {
+      return {
+        _id: employee._id,
+        name: employee.name,
+        username: employee.username,
+        email: employee.email,
+        admin: employee.admin,
+        receiving: employee.receiving,
+        shipping: employee.shipping
+      };
+    }));
   })
   .catch(err => next(err));
 });

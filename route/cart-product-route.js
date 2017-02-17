@@ -37,12 +37,12 @@ cartRouter.get('/api/products', function(request, response, next) {
   .catch(err => next(err));
 });
 
-cartRouter.put('/api/products/:productID', parseJSON, function(request, response, next) {
+cartRouter.put('/api/store/:storeID/products/:productID', parseJSON, function(request, response, next) {
   debug('PUT: /api/products/:productID');
 
   if (Object.getOwnPropertyNames(request.body).length === 0) next(createError(400, 'No body supplied.'));
 
-  CartProduct.findByIdAndUpdate(request.params.productID, request.body, {new: true})
+  CartOrder.updateCartProduct(request.params.productID, request.params.storeID, request.body)
   .then(product => response.json(product))
   .catch(() => next(createError(404, 'Product not found.')));
 });

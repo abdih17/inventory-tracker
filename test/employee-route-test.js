@@ -128,9 +128,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleAdminEmployee.name);
+            expect(response.body.username).to.equal(exampleAdminEmployee.username);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
@@ -147,9 +148,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleEmployeeUnassigned.name);
+            expect(response.body.username).to.equal(exampleEmployeeUnassigned.username);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
@@ -166,9 +168,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleEmployeeAssigned.name);
+            expect(response.body.username).to.equal(exampleEmployeeAssigned.username);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
@@ -185,9 +188,10 @@ describe('Employee route', function() {
           .then(store => {
             expect(response.status).to.equal(201);
             expect(store.employees.length).to.equal(1);
-            expect(response.text).to.be.a('string');
             expect(response.body).to.be.an('object');
-            expect(response.body).to.be.empty;
+            expect(response.body.name).to.equal(exampleEmployeeDefaultUsername.name);
+            expect(response.body.username).to.equal(exampleEmployeeDefaultUsername.email);
+            expect(response.body._id).to.be.a('string');
             done();
           });
         });
@@ -222,7 +226,7 @@ describe('Employee route', function() {
     });
   });
 
-  describe('GET: /api/signin', () => {
+  describe('GET: /api/employee/signin', () => {
     after(done => {
       Employee.remove({})
       .then(() => done())
@@ -252,6 +256,7 @@ describe('Employee route', function() {
           expect(response.body.username).to.equal(exampleAdminEmployee.username);
           expect(response.body.email).to.equal(exampleAdminEmployee.email);
           expect(response.body.admin).to.equal(true);
+          expect(response.body.token).to.be.a('string');
           expect(response.body.password).to.equal(undefined);
           done();
         });
@@ -376,12 +381,20 @@ describe('Employee route', function() {
 
     describe('With no ID', () => {
       before( done => {
-        let employeeAdminB = new Employee(exampleAdminEmployeeB);
-
-        employeeAdminB.hashPassword(employeeAdminB.password)
+        new Store(sampleStore).save()
+        .then(store => {
+          this.tempStore = store;
+          let employeeAdminB = new Employee(exampleAdminEmployeeB);
+          return employeeAdminB.hashPassword(employeeAdminB.password);
+        })
         .then(employeeAdmin => employeeAdmin.save())
         .then(employeeAdmin => {
           this.tempEmployeeAdminB = employeeAdmin;
+          this.tempEmployeeAdminB.storeID = this.tempStore._id;
+          return this.tempEmployeeAdminB.generateToken();
+        })
+        .then(token => {
+          this.tempTokenEmployeeAdmin = token;
           done();
         })
         .catch(done);
@@ -389,33 +402,55 @@ describe('Employee route', function() {
 
       after( done => {
         Employee.findByIdAndRemove(this.tempEmployeeAdminB._id)
+        .then(() => Store.remove({}))
         .then(() => done())
         .catch(done);
       });
 
       it('should return an array of employees', done => {
         request
-        .get(`${url}/api/employee`)
+        .get(`${url}/api/store/${this.tempStore._id}/employees`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
         .end((err, response) => {
           if (err) return done(err);
           expect(response.status).to.equal(200);
           expect(response.body).to.be.an('array');
           expect(response.body.length).to.be.at.least(1);
+          expect(response.body[0].name).to.equal(exampleAdminEmployeeB.name);
           done();
         });
       });
     });
 
-    describe('GET: /api/employee with no ID, but no data', () => {
-      before(done => {
-        Employee.remove({})
+    describe('GET: /api/store/:storeID/employees with no ID, but no data', () => {
+      before( done => {
+        new Store(sampleStore).save()
+        .then(store => {
+          this.tempStore = store;
+          let employeeAdminB = new Employee(exampleAdminEmployeeB);
+          return employeeAdminB.hashPassword(employeeAdminB.password);
+        })
+        .then(employeeAdmin => employeeAdmin.save())
+        .then(employeeAdmin => {
+          this.tempEmployeeAdminB = employeeAdmin;
+          return this.tempEmployeeAdminB.generateToken();
+        })
+        .then(token => {
+          this.tempTokenEmployeeAdmin = token;
+          return Employee.remove({});
+        })
         .then(() => done())
         .catch(done);
       });
 
       it('should return a 416 error', done => {
         request
-        .get(`${url}/api/employee`)
+        .get(`${url}/api/store/${this.tempStore._id}/employees`)
+        .set({
+          Authorization: `Bearer ${this.tempTokenEmployeeAdmin}`
+        })
         .end((err, response) => {
           expect(err).to.be.an('error');
           expect(response.status).to.equal(416);
