@@ -1,5 +1,5 @@
 # Inventory-tracker
-##### **401 *group project***
+
 [Caleb](https://github.com/maschigokae), [Evan](https://github.com/EWPS07), [Hawa](https://github.com/abdih17), and [Steven](https://github.com/BatemanVO)
 
 [![Build Status](https://travis-ci.org/abdih17/inventory-tracker.svg?branch=staging)](https://travis-ci.org/abdih17/inventory-tracker)
